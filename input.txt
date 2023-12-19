@@ -1,0 +1,18 @@
+_if_word_starts_with_underscore_is_ignored
+_dimension 720 720
+_camera_position 0 0 0
+_camera_vector 0 1 0
+_camera_angle 1
+_ray_per_pixel 10
+_max_bounce 2
+_total_objects 5
+_sphere _position    _radius _color          _emission_intensity
+_______ _______________ ____ _______________ _____
+sphere     0  100 -1050 1000     1    1    1  0.02
+sphere   -40  200   -10   30     1    1    0  0.02
+sphere    50  200   -20   20     0    1    1  0.02
+sphere   -20  160    60   10     1    1    1    30
+
+_plane  _aX+bY+cZ=D              _color          _emission_intensity
+_______ ________________________ _______________ _____
+plane        0     1     0   300  0.60 0.86 0.86   0.2
