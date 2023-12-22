@@ -24,7 +24,7 @@ impl Camera {
         for i in 0..n_rays_y {
             for j in 0..n_rays_x {
                 let point = ul + dy * i as f32 + dx * j as f32;
-                rays.push(Ray::new(ray.orig, point));
+                rays.push(Ray::new_norm(ray.orig, point));
             }
         }
 
@@ -56,18 +56,16 @@ fn screen_corners(ray: &Ray, alpha: f32, ratio: f32) -> (Float3, Float3, Float3,
     let base_dl = Float3::new(x, -y, -z);
     let base_dr = Float3::new(x, y, -z);
 
-    // dbg!(base_ul, base_ur, base_dl, base_dr);
     let dir = ray.dir;
     let pos = ray.orig;
 
     let mut dir1 = dir;
-    dir1.normalize();
     let mut dir2 = Float3::new(0.0, 0.0, 1.0).cross(&dir);
-    dir2.normalize();
     let mut dir3 = dir1.cross(&dir2);
-    dir3.normalize();
 
-    // dbg!(dir, dir2, dir3);
+    dir1.normalize();
+    dir2.normalize();
+    dir3.normalize();
 
     let change = Mat3::new([
         [dir1.x, dir2.x, dir3.x],
@@ -75,14 +73,12 @@ fn screen_corners(ray: &Ray, alpha: f32, ratio: f32) -> (Float3, Float3, Float3,
         [dir1.z, dir2.z, dir3.z],
     ]);
 
-    let ray_ul = Ray::new(pos, change.mul_vec(&base_ul));
-    let ray_ur = Ray::new(pos, change.mul_vec(&base_ur));
-    let ray_dr = Ray::new(pos, change.mul_vec(&base_dr));
-    let ray_dl = Ray::new(pos, change.mul_vec(&base_dl));
+    let ray_ul = Ray::new_norm(pos, change.mul_vec(&base_ul));
+    let ray_ur = Ray::new_norm(pos, change.mul_vec(&base_ur));
+    let ray_dr = Ray::new_norm(pos, change.mul_vec(&base_dr));
+    let ray_dl = Ray::new_norm(pos, change.mul_vec(&base_dl));
 
-    // dbg!(&ray_ul, &ray_ur, &ray_dl, &ray_dr);
-
-    let plane = Plane::new(dir.x, dir.y, dir.z, (pos + dir).dot(&dir));
+    let plane = Plane::new(dir.x, dir.y, dir.z, -(pos + dir).dot(&dir));
 
     let ul = ray_ul.orig + ray_ul.dir * plane.intersect(&ray_ul).unwrap();
     let ur = ray_ur.orig + ray_ur.dir * plane.intersect(&ray_ur).unwrap();
@@ -97,28 +93,26 @@ mod tests {
     use super::*;
     #[test]
     fn test_screen_corners() {
-        let ray = Ray::new(Float3::new(0.0, 0.0, 0.0), Float3::new(1.0, 1.0, 1.0));
+        let ray = Ray::new_norm(Float3::new(0.0, 0.0, 0.0), Float3::new(1.0, 1.0, 1.0));
         let alpha = 90f32.to_radians();
         let ratio = 2.0;
 
         let (ul, ur, dr, dl) = screen_corners(&ray, alpha, ratio);
 
-        dbg!(ul, ur, dr, dl);
+        assert!((ul.x - 1.08).abs() < 1e-2);
+        assert!((ul.y + 0.33).abs() < 1e-2);
+        assert!((ul.z - 0.99).abs() < 1e-2);
 
-        assert!((ul.x - 1.87).abs() < 1e-2);
-        assert!((ul.y + 0.58).abs() < 1e-2);
-        assert!((ul.z - 1.71).abs() < 1e-2);
+        assert!((ur.x + 0.33).abs() < 1e-2);
+        assert!((ur.y - 1.08).abs() < 1e-2);
+        assert!((ur.z - 0.99).abs() < 1e-2);
 
-        assert!((ur.x + 0.58).abs() < 1e-2);
-        assert!((ur.y - 1.87).abs() < 1e-2);
-        assert!((ur.z - 1.71).abs() < 1e-2);
+        assert!((dr.x - 0.07).abs() < 1e-2);
+        assert!((dr.y - 1.48).abs() < 1e-2);
+        assert!((dr.z - 0.17).abs() < 1e-2);
 
-        assert!((dr.x - 0.13).abs() < 1e-2);
-        assert!((dr.y - 2.58).abs() < 1e-2);
-        assert!((dr.z - 0.29).abs() < 1e-2);
-
-        assert!((dl.x - 2.58).abs() < 1e-2);
-        assert!((dl.y - 0.13).abs() < 1e-2);
-        assert!((dl.z - 0.29).abs() < 1e-2);
+        assert!((dl.x - 1.48).abs() < 1e-2);
+        assert!((dl.y - 0.07).abs() < 1e-2);
+        assert!((dl.z - 0.17).abs() < 1e-2);
     }
 }

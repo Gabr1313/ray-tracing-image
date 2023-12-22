@@ -1,5 +1,5 @@
 use crate::camera::Camera;
-use crate::object::{Object, Plane, Sphere};
+use crate::object::{triangle, Object, Plane, Sphere};
 use crate::ray::Ray;
 use crate::utils::Float3;
 use crate::Result;
@@ -61,7 +61,7 @@ pub fn read_input(filename: &str) -> Result<Settings> {
 
     let camera_pos = Float3::new(scan.tok(), scan.tok(), scan.tok());
     let camera_dir = Float3::new(scan.tok(), scan.tok(), scan.tok());
-    let ray = Ray::new(camera_pos, camera_dir);
+    let ray = Ray::new_norm(camera_pos, camera_dir);
     let camera_angle: f32 = scan.tok();
     let camera = Camera::new_rectangle(&ray, camera_angle, width, height);
 
@@ -74,27 +74,29 @@ pub fn read_input(filename: &str) -> Result<Settings> {
     for i in 0..n {
         match scan.tok::<String>().to_lowercase().as_str() {
             "sphere" => {
-                let sphere = Sphere::new(
-                    Float3::new(scan.tok(), scan.tok(), scan.tok()),
-                    scan.tok(),
-                );
+                let sphere =
+                    Sphere::new(Float3::new(scan.tok(), scan.tok(), scan.tok()), scan.tok());
                 let col = Float3::new(scan.tok(), scan.tok(), scan.tok());
+                let reflect = scan.tok();
                 let intensity: f32 = scan.tok();
-                objs.push(Object::new(
-                    Box::new(sphere),
-                    col,
-                    intensity,
-                ));
+                objs.push(Object::new(Box::new(sphere), col, intensity, reflect));
             }
             "plane" => {
                 let plane = Plane::new(scan.tok(), scan.tok(), scan.tok(), scan.tok());
                 let col = Float3::new(scan.tok(), scan.tok(), scan.tok());
+                let reflect = scan.tok();
                 let intensity: f32 = scan.tok();
-                objs.push(Object::new(
-                    Box::new(plane),
-                    col,
-                    intensity,
-                ));
+                objs.push(Object::new(Box::new(plane), col, intensity, reflect));
+            }
+            "triangle" => {
+                let p1 = Float3::new(scan.tok(), scan.tok(), scan.tok());
+                let p2 = Float3::new(scan.tok(), scan.tok(), scan.tok());
+                let p3 = Float3::new(scan.tok(), scan.tok(), scan.tok());
+                let triangle = triangle::Triangle::new(p1, p2, p3);
+                let col = Float3::new(scan.tok(), scan.tok(), scan.tok());
+                let reflect = scan.tok();
+                let intensity: f32 = scan.tok();
+                objs.push(Object::new(Box::new(triangle), col, intensity, reflect));
             }
             _ => {
                 return Err(Box::new(io::Error::new(

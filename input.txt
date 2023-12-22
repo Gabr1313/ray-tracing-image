@@ -3,16 +3,22 @@ _dimension 720 720
 _camera_position 0 0 0
 _camera_vector 0 1 0
 _camera_angle 1
-_ray_per_pixel 10
-_max_bounce 2
-_total_objects 5
-_sphere _position    _radius _color          _emission_intensity
-_______ _______________ ____ _______________ _____
-sphere     0  100 -1050 1000     1    1    1  0.02
-sphere   -40  200   -10   30     1    1    0  0.02
-sphere    50  200   -20   20     0    1    1  0.02
-sphere   -20  160    60   10     1    1    1    30
+_ray_per_pixel 100
+_max_bounce 100
+_total_objects 6
 
-_plane  _aX+bY+cZ=D              _color          _emission_intensity
-_______ ________________________ _______________ _____
-plane        0     1     0   300  0.60 0.86 0.86   0.2
+_sphere   _position    _radius _color          _refl _emission_intensity
+_________ _______________ ____ _______________ _____ _____
+sphere       0   10  -105  100     1    1    1    .0  0.02
+sphere      -4   20    -1    3     1    1    0    .0  0.02
+sphere       5   20    -2    2     0    1    1    .0  0.02
+sphere      -2   22     6  1.5     1    1    1     0     5
+
+_triangle _point_point_point           _color          _refl _emission_intensity
+_________ ________  ________  ________ _______________ _____ _____
+triangle  -16 30 -10  -16 30 16 16 30 -10   1 1 1          1    .0
+triangle  16 30 16  -16 30 16 16 30 -10   1 1 1            1    .0
+
+_plane    _aX+bY+cZ-D=0            _color          _refl _emission_intensity
+_________ ________________________ _______________ _____ _____
+plane          0     1     0  -300  0.60 0.86 0.86     0   0.2

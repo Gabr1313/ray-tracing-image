@@ -1,4 +1,23 @@
 use std::ops::{Add, Div, Mul, Sub};
+pub const EPS: f32 = 1e-3;
+
+#[derive(Copy, Clone, Debug, PartialEq, Default)]
+pub struct Float2 {
+    pub x: f32,
+    pub y: f32,
+}
+
+impl Float2 {
+    pub fn new(x: f32, y: f32) -> Self {
+        return Float2 { x, y };
+    }
+    pub fn dot(&self, rhs: &Self) -> f32 {
+        return self.x * rhs.x + self.y * rhs.y;
+    }
+    pub fn cross(&self, rhs: &Self) -> f32 {
+        return self.x * rhs.y - rhs.x * self.y;
+    }
+}
 
 #[derive(Copy, Clone, Debug, PartialEq, Default)]
 pub struct Float3 {
@@ -59,6 +78,15 @@ impl Float3 {
         self.x /= rhs.x;
         self.y /= rhs.y;
         self.z /= rhs.z;
+    }
+    pub fn invert(&mut self) {
+        self.x = -self.x;
+        self.y = -self.y;
+        self.z = -self.z;
+    }
+    pub fn reflect(&self, axis: &Self) -> Self {
+        debug_assert!((axis.norm() - 1.0).abs() < 1e-6);
+        return *axis * (-2.0 * self.dot(axis)) + *self;
     }
 }
 

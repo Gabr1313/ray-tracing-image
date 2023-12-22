@@ -7,12 +7,19 @@ use std::io::Write;
 fn main() -> Result<()> {
     let settings = read_input("input.txt")?;
     let (width, height) = (settings.width, settings.height);
-    let pixels = shoot_rays(settings);
+
+    let pixels = shoot_rays(&settings);
+
     let header = format!("P6\n{} {}\n{}\n", width, height, 0xff);
+
+    let content: Vec<u8> = pixels
+        .iter()
+        .map(|color| (color * 256.0) as u8)
+        .collect();
 
     let mut file = File::create("draw.ppm")?;
     file.write_all(header.as_bytes())?;
-    file.write_all(&pixels)?;
+    file.write_all(&content)?;
 
     Ok(())
 }

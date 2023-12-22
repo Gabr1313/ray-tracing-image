@@ -39,15 +39,19 @@ impl Intersectable for Sphere {
         return Some(t);
     }
 
-    fn normal(&self, point: &Float3) -> Ray {
-        // assert!(
-        //     (point.x - self.center.x) * (point.x - self.center.x)
-        //         + (point.y - self.center.y) * (point.y - self.center.y)
-        //         + (point.z - self.center.z) * (point.z - self.center.z)
-        //         - self.radius * self.radius
-        //         < 1e-10
-        // );
-        return Ray::new(*point, *point - self.center);
+    fn normal(&self, point: &Float3, start_point: &Float3) -> Ray {
+        let mut ray = Ray::new_norm(*point, *point - self.center);
+        let tmp = ray.dir + ray.orig;
+        if ((ray.orig.x - start_point.x).abs()
+            + (ray.orig.y - start_point.y).abs()
+            + (ray.orig.z - start_point.z).abs())
+            < ((tmp.x - start_point.x).abs()
+                + (tmp.y - start_point.y).abs()
+                + (tmp.z - start_point.z).abs())
+        {
+            ray.orig.invert();
+        }
+        return ray;
     }
 }
 
@@ -58,10 +62,8 @@ mod tests {
     #[test]
     fn ray_intersect_sphere_inside() {
         let sphere = Sphere::new(Float3::new(1.0, 2.0, 3.0), 4.0);
-        let ray = Ray::new(Float3::new(2.0, 3.0, 4.0), Float3::new(1.0, 1.0, 1.0));
-        let intersection = sphere.intersect(&ray);
-        assert!(intersection.is_some());
-        let t = intersection.unwrap();
+        let ray = Ray::new_norm(Float3::new(2.0, 3.0, 4.0), Float3::new(1.0, 1.0, 1.0));
+        let t = sphere.intersect(&ray).unwrap();
         let point = ray.orig + ray.dir * t;
         assert!(1.30 < point.x && point.x < 3.32);
         assert!(4.30 < point.y && point.y < 4.32);
@@ -71,10 +73,8 @@ mod tests {
     #[test]
     fn ray_intersect_sphere_outside() {
         let sphere = Sphere::new(Float3::new(1.0, 2.0, 3.0), 4.0);
-        let ray = Ray::new(Float3::new(-1.0, -1.0, 0.0), Float3::new(1.0, 2.0, 3.0));
-        let intersection = sphere.intersect(&ray);
-        assert!(intersection.is_some());
-        let t = intersection.unwrap();
+        let ray = Ray::new_norm(Float3::new(-1.0, -1.0, 0.0), Float3::new(1.0, 2.0, 3.0));
+        let t = sphere.intersect(&ray).unwrap();
         let point = ray.orig + ray.dir * t;
         assert!(-0.82 < point.x && point.x < -0.80);
         assert!(-0.63 < point.y && point.y < -0.61);
@@ -84,7 +84,7 @@ mod tests {
     #[test]
     fn ray_intersect_sphere_opposite_direction() {
         let sphere = Sphere::new(Float3::new(1.0, 2.0, 3.0), 4.0);
-        let ray = Ray::new(Float3::new(-1.0, -1.0, 0.0), Float3::new(-1.0, -2.0, -3.0));
+        let ray = Ray::new_norm(Float3::new(-1.0, -1.0, 0.0), Float3::new(-1.0, -2.0, -3.0));
         let intersection = sphere.intersect(&ray);
         assert!(intersection.is_none());
     }
@@ -92,7 +92,7 @@ mod tests {
     #[test]
     fn ray_intersect_sphere_false() {
         let sphere = Sphere::new(Float3::new(1.0, 2.0, 3.0), 4.0);
-        let ray = Ray::new(Float3::new(-1.0, -1.0, 5.0), Float3::new(1.0, 2.0, 3.0));
+        let ray = Ray::new_norm(Float3::new(-1.0, -1.0, 5.0), Float3::new(1.0, 2.0, 3.0));
         let intersection = sphere.intersect(&ray);
         assert!(intersection.is_none());
     }
