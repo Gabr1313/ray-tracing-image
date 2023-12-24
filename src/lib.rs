@@ -43,7 +43,7 @@ pub fn shoot_and_draw(settings: Settings) -> Result<()> {
     let n_threads = if settings.n_threads > 0 {
         settings.n_threads
     } else {
-        thread::available_parallelism().unwrap().get()
+        thread::available_parallelism()?.get()
     };
 
     let header = format!("P6\n{} {}\n{}\n", width, height, 0xff);

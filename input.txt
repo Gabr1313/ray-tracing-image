@@ -10,20 +10,16 @@ _max_bounce 10
 _background_color .1 .1 .1
 _total_objects 5
 
+_triangle _point    _point           _point            _color          _refl _emission_intensity
+_________ ____________  ____________ ____________      _______________ _____ _____
 triangle     25  10   3     25 -10  0     25 10 -6      .5    1   .5       .5    0 
 triangle      7   0  -3     25 -10  0     25 10 -6     .63  .01    1       .5    0 
 
+_sphere   _position    _radius _color          _refl _emission_intensity
+_________ _______________ ____ _______________ _____ _____
 sphere      10 -15     14   15     1    1    1     0     1
 sphere      15   4     -2    3     1    1    0     0     0
 sphere      15  -2     -1    2     0    1    1     0     0
 
-_triangle _point    _point           _point            _color          _refl _emission_intensity
-_________ ____________  ____________ ____________      _______________ _____ _____
-_sphere   _position    _radius _color          _refl _emission_intensity
-_________ _______________ ____ _______________ _____ _____
 _plane    _aX+bY+cZ-D=0            _color          _refl _emission_intensity
 _________ ________________________ _______________ _____ _____
-
-sphere      10   0   -105  100   .63  .01    1    .5     0
-plane          0     0     1     6  0.60 0.86 0.86     0   0.2
-

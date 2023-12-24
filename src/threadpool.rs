@@ -1,7 +1,5 @@
-use std::{
-    sync::{mpsc, Arc, Mutex},
-    thread,
-};
+use std::sync::{mpsc, Arc, Mutex};
+use std::thread;
 
 pub struct ThreadPool {
     workers: Vec<Worker>,
@@ -21,7 +19,12 @@ impl ThreadPool {
         let todo = Arc::new(Mutex::new(0));
         let (wait_sender, wait_receiver) = mpsc::channel();
         for id in 0..size {
-            workers.push(Worker::new(id, Arc::clone(&receiver), Arc::clone(&todo), wait_sender.clone()));
+            workers.push(Worker::new(
+                id,
+                Arc::clone(&receiver),
+                Arc::clone(&todo),
+                wait_sender.clone(),
+            ));
         }
         wait_sender.send(()).unwrap();
         ThreadPool {
@@ -100,5 +103,4 @@ fn sub_todo(todo: &Arc<Mutex<usize>>, wait_sender: &mpsc::Sender<()>) {
     if *todo == 0 {
         wait_sender.send(()).unwrap();
     }
-} 
-
+}
