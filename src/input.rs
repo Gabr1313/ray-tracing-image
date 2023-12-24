@@ -47,8 +47,11 @@ fn file_reader(filename: &str) -> io::Result<Scanner<io::BufReader<std::fs::File
 pub struct Settings {
     pub width: usize,
     pub height: usize,
+    pub n_threads: usize,
+    pub number_of_update: usize,
+    pub ray_per_update: usize,
     pub camera: Camera,
-    pub ray_per_pixel: usize,
+    pub background: Float3,
     pub max_bounces: usize,
     pub objs: Vec<Object>,
 }
@@ -56,8 +59,12 @@ pub struct Settings {
 pub fn read_input(filename: &str) -> Result<Settings> {
     let mut scan = file_reader(filename)?;
 
-    let width: usize = scan.tok();
-    let height: usize = scan.tok();
+    let width = scan.tok();
+    let height = scan.tok();
+
+    let n_threads = scan.tok();
+    let ray_per_update = scan.tok();
+    let number_of_update = scan.tok();
 
     let camera_pos = Float3::new(scan.tok(), scan.tok(), scan.tok());
     let camera_dir = Float3::new(scan.tok(), scan.tok(), scan.tok());
@@ -65,8 +72,8 @@ pub fn read_input(filename: &str) -> Result<Settings> {
     let camera_angle: f32 = scan.tok();
     let camera = Camera::new_rectangle(&ray, camera_angle, width, height);
 
-    let ray_per_pixel: usize = scan.tok();
     let max_bounces: usize = scan.tok();
+    let background = Float3::new(scan.tok(), scan.tok(), scan.tok());
 
     let n: usize = scan.tok();
 
@@ -109,8 +116,11 @@ pub fn read_input(filename: &str) -> Result<Settings> {
     return Ok(Settings {
         width,
         height,
+        n_threads,
+        ray_per_update,
         camera,
-        ray_per_pixel,
+        background,
+        number_of_update,
         max_bounces,
         objs,
     });

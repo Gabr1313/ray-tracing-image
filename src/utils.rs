@@ -1,5 +1,4 @@
 use std::ops::{Add, Div, Mul, Sub};
-pub const EPS: f32 = 1e-3;
 
 #[derive(Copy, Clone, Debug, PartialEq, Default)]
 pub struct Float2 {
@@ -86,13 +85,13 @@ impl Float3 {
     }
     pub fn reflect(&self, axis: &Self) -> Self {
         debug_assert!((axis.norm() - 1.0).abs() < 1e-6);
-        return *axis * (-2.0 * self.dot(axis)) + *self;
+        return *axis * (-2.0 * self.dot(axis)) + self;
     }
 }
 
-impl Add for Float3 {
+impl Add<&Float3> for Float3 {
     type Output = Self;
-    fn add(self, rhs: Self) -> Self {
+    fn add(self, rhs: &Self) -> Self {
         return Float3 {
             x: self.x + rhs.x,
             y: self.y + rhs.y,
@@ -101,9 +100,9 @@ impl Add for Float3 {
     }
 }
 
-impl Sub for Float3 {
+impl Sub<&Float3> for Float3 {
     type Output = Self;
-    fn sub(self, rhs: Self) -> Self {
+    fn sub(self, rhs: &Self) -> Self {
         return Float3 {
             x: self.x - rhs.x,
             y: self.y - rhs.y,
@@ -123,9 +122,9 @@ impl Mul<f32> for Float3 {
     }
 }
 
-impl Mul<Float3> for Float3 {
+impl Mul<&Float3> for Float3 {
     type Output = Self;
-    fn mul(self, rhs: Float3) -> Self {
+    fn mul(self, rhs: &Float3) -> Self {
         return Float3 {
             x: self.x * rhs.x,
             y: self.y * rhs.y,

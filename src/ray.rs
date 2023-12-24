@@ -15,7 +15,7 @@ impl Ray {
         return Ray { orig, dir };
     }
     pub fn move_along(&mut self, t: f32) {
-        self.orig = self.orig + self.dir * t;
+        self.orig = self.orig + &(self.dir * t);
     }
 }
 

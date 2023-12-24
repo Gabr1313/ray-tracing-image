@@ -19,11 +19,11 @@ impl Camera {
         let (ul, ur, _, dl) = screen_corners(&ray, alpha, ratio);
 
         let mut rays = Vec::with_capacity(n_rays_y * n_rays_x);
-        let dy = (dl - ul) / (n_rays_y - 1) as f32;
-        let dx = (ur - ul) / (n_rays_x - 1) as f32;
+        let dy = (dl - &ul) / (n_rays_y - 1) as f32;
+        let dx = (ur - &ul) / (n_rays_x - 1) as f32;
         for i in 0..n_rays_y {
             for j in 0..n_rays_x {
-                let point = ul + dy * i as f32 + dx * j as f32;
+                let point = ul + &(dy * i as f32) + &(dx * j as f32);
                 rays.push(Ray::new_norm(ray.orig, point));
             }
         }
@@ -78,12 +78,12 @@ fn screen_corners(ray: &Ray, alpha: f32, ratio: f32) -> (Float3, Float3, Float3,
     let ray_dr = Ray::new_norm(pos, change.mul_vec(&base_dr));
     let ray_dl = Ray::new_norm(pos, change.mul_vec(&base_dl));
 
-    let plane = Plane::new(dir.x, dir.y, dir.z, -(pos + dir).dot(&dir));
+    let plane = Plane::new(dir.x, dir.y, dir.z, -(pos + &dir).dot(&dir));
 
-    let ul = ray_ul.orig + ray_ul.dir * plane.intersect(&ray_ul).unwrap();
-    let ur = ray_ur.orig + ray_ur.dir * plane.intersect(&ray_ur).unwrap();
-    let dr = ray_dr.orig + ray_dr.dir * plane.intersect(&ray_dr).unwrap();
-    let dl = ray_dl.orig + ray_dl.dir * plane.intersect(&ray_dl).unwrap();
+    let ul = ray_ul.orig + &(ray_ul.dir * plane.intersect(&ray_ul).unwrap());
+    let ur = ray_ur.orig + &(ray_ur.dir * plane.intersect(&ray_ur).unwrap());
+    let dr = ray_dr.orig + &(ray_dr.dir * plane.intersect(&ray_dr).unwrap());
+    let dl = ray_dl.orig + &(ray_dl.dir * plane.intersect(&ray_dl).unwrap());
 
     return (ul, ur, dr, dl);
 }

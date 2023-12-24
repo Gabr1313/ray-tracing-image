@@ -40,8 +40,8 @@ impl Intersectable for Sphere {
     }
 
     fn normal(&self, point: &Float3, start_point: &Float3) -> Ray {
-        let mut ray = Ray::new_norm(*point, *point - self.center);
-        let tmp = ray.dir + ray.orig;
+        let mut ray = Ray::new_norm(*point, *point - &self.center);
+        let tmp = ray.dir + &ray.orig;
         if ((ray.orig.x - start_point.x).abs()
             + (ray.orig.y - start_point.y).abs()
             + (ray.orig.z - start_point.z).abs())
@@ -64,7 +64,7 @@ mod tests {
         let sphere = Sphere::new(Float3::new(1.0, 2.0, 3.0), 4.0);
         let ray = Ray::new_norm(Float3::new(2.0, 3.0, 4.0), Float3::new(1.0, 1.0, 1.0));
         let t = sphere.intersect(&ray).unwrap();
-        let point = ray.orig + ray.dir * t;
+        let point = ray.orig + &(ray.dir * t);
         assert!(1.30 < point.x && point.x < 3.32);
         assert!(4.30 < point.y && point.y < 4.32);
         assert!(5.30 < point.z && point.z < 5.32);
@@ -75,7 +75,7 @@ mod tests {
         let sphere = Sphere::new(Float3::new(1.0, 2.0, 3.0), 4.0);
         let ray = Ray::new_norm(Float3::new(-1.0, -1.0, 0.0), Float3::new(1.0, 2.0, 3.0));
         let t = sphere.intersect(&ray).unwrap();
-        let point = ray.orig + ray.dir * t;
+        let point = ray.orig + &(ray.dir * t);
         assert!(-0.82 < point.x && point.x < -0.80);
         assert!(-0.63 < point.y && point.y < -0.61);
         assert!(0.56 < point.z && point.z < 0.58);

@@ -95,7 +95,7 @@ impl Triangle {
 impl Intersectable for Triangle {
     fn intersect(&self, ray: &Ray) -> Option<f32> {
         if let Some(t) = self.plane.intersect(ray) {
-            let point = ray.orig + ray.dir * t;
+            let point = ray.orig + &(ray.dir * t);
             let (d1, d2, d3) = (self.r1.dir, self.r2.dir, self.r3.dir);
             let (p1, p2, p3) = (self.r1.orig, self.r2.orig, self.r3.orig);
             let (cross1, cross2, cross3);

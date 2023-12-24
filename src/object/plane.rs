@@ -48,7 +48,7 @@ impl Intersectable for Plane {
     }
     fn normal(&self, point: &Float3, start_point: &Float3) -> Ray {
         let mut ray = Ray::new_norm(*point, Float3::new(self.a, self.b, self.c));
-        let tmp = ray.orig + ray.dir;
+        let tmp = ray.orig + &ray.dir;
         if ((ray.orig.x - start_point.x).abs()
             + (ray.orig.y - start_point.y).abs()
             + (ray.orig.z - start_point.z).abs())
@@ -71,7 +71,7 @@ mod tests {
         let plane = Plane::new(1.0, 1.0, 1.0, -1.0);
         let ray = Ray::new_norm(Float3::new(-1.0, -1.0, 5.0), Float3::new(-1.0, -2.0, -3.0));
         let t = plane.intersect(&ray).unwrap();
-        let point = ray.orig + ray.dir * t;
+        let point = ray.orig + &(ray.dir * t);
         assert!(-1.34 < point.x && point.x < -1.32);
         assert!(-1.68 < point.y && point.y < -1.66);
         assert!(3.99 < point.z && point.z < 4.01);
