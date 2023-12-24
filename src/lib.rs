@@ -51,10 +51,9 @@ pub fn shoot_and_draw(settings: Settings) -> Result<()> {
     let mut file = File::create("draw.ppm")?;
     file.write_all(header.as_bytes())?;
 
+    let pool = ThreadPool::new(n_threads);
     let image_status = Arc::new(Mutex::new(ImageStatus::new(width * height)));
     for nou in 1..=number_of_updates {
-        // waiting for all the threads to finish with a pool is slower
-        let pool = ThreadPool::new(n_threads);
         let to_multiply = 256.0 / (nou * ray_per_update) as f32;
         for (i, &ray) in camera.iter().enumerate() {
             let objs = Arc::clone(&objs);
@@ -74,6 +73,7 @@ pub fn shoot_and_draw(settings: Settings) -> Result<()> {
                 rgb[2] = (total_pix_sum.z * to_multiply) as u8; 
             });
         }
+        pool.wait();
         file.seek(SeekFrom::Start(header_len))?;
         file.write_all(&image_status.lock().unwrap().u8s)?;
     }

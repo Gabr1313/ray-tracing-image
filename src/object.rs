@@ -46,7 +46,7 @@ impl Object {
         };
     }
 
-    pub fn reflect(&self, ray: &mut Ray, t: f32) -> bool {
+    pub fn reflect(&self, ray: &mut Ray, t: f32) {
         let start_point = ray.orig;
         ray.move_along(t);
         let norm = self.shape.normal(&ray.orig, &start_point);
@@ -57,7 +57,6 @@ impl Object {
         } else {
             ray.dir = half_sphere_cosine_distribution(norm, &mut rng);
         }
-        return true;
     }
 }
 
@@ -68,8 +67,9 @@ fn half_sphere_cosine_distribution(norm: Ray, rng: &mut ThreadRng) -> Float3 {
     let x = sin_theta * phi.cos();
     let y = sin_theta * phi.sin();
     let z = theta.cos();
+    debug_assert!(norm.dir.norm() - 1.0 < 0.0001);
+    debug_assert!(Float3::new(x, y, z).norm() - 1.0 < 0.0001);
     let mut dir = Float3::new(x, y, z) + &norm.dir;
-    // todo: could happen to divide by zero? Up to now it didn't
     if !(dir.x != -norm.dir.x && dir.y == -norm.dir.y && dir.z == -norm.dir.z) {
         dir.normalize();
     }
