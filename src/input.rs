@@ -48,7 +48,7 @@ pub struct Settings {
     pub width: usize,
     pub height: usize,
     pub n_threads: usize,
-    pub number_of_update: usize,
+    pub number_of_updates: usize,
     pub ray_per_update: usize,
     pub camera: Camera,
     pub background: Float3,
@@ -120,7 +120,7 @@ pub fn read_input(filename: &str) -> Result<Settings> {
         ray_per_update,
         camera,
         background,
-        number_of_update,
+        number_of_updates: number_of_update,
         max_bounces,
         objs,
     });
