@@ -33,13 +33,13 @@ impl ImageStatus {
 }
 
 pub fn shoot_and_draw(settings: Settings) -> Result<()> {
-    let ray_per_update = settings.ray_per_update;
     let number_of_updates = settings.number_of_updates;
     let camera = &settings.camera.rays;
     let background = settings.background;
     let objs = Arc::new(settings.objs);
     let width = settings.width;
     let height = settings.height;
+    let ray_per_pixel = camera[0].len();
     let n_threads = if settings.n_threads > 0 {
         settings.n_threads
     } else {
@@ -54,13 +54,14 @@ pub fn shoot_and_draw(settings: Settings) -> Result<()> {
     let pool = ThreadPool::new(n_threads);
     let image_status = Arc::new(Mutex::new(ImageStatus::new(width * height)));
     for nou in 1..=number_of_updates {
-        let to_multiply = 256.0 / (nou * ray_per_update) as f32;
-        for (i, &ray) in camera.iter().enumerate() {
+        let to_multiply = 256.0 / (nou * ray_per_pixel) as f32;
+        for (i, ray_group) in camera.iter().enumerate() {
             let objs = Arc::clone(&objs);
             let image_status = Arc::clone(&image_status);
+            let ray_group = Arc::clone(ray_group);
             pool.execute(move || {
                 let mut local_pix_sum = Float3::new(0.0, 0.0, 0.0);
-                for _ in 0..ray_per_update {
+                for ray in ray_group.iter() {
                     let light = trace_ray(&ray, &objs, settings.max_bounces, &background);
                     local_pix_sum.sum(&light);
                 }

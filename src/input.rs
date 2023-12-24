@@ -49,7 +49,6 @@ pub struct Settings {
     pub height: usize,
     pub n_threads: usize,
     pub number_of_updates: usize,
-    pub ray_per_update: usize,
     pub camera: Camera,
     pub background: Float3,
     pub max_bounces: usize,
@@ -63,14 +62,14 @@ pub fn read_input(filename: &str) -> Result<Settings> {
     let height = scan.tok();
 
     let n_threads = scan.tok();
-    let ray_per_update = scan.tok();
+    let sqrt_ray_per_pixel = scan.tok();
     let number_of_update = scan.tok();
 
     let camera_pos = Float3::new(scan.tok(), scan.tok(), scan.tok());
     let camera_dir = Float3::new(scan.tok(), scan.tok(), scan.tok());
     let ray = Ray::new_norm(camera_pos, camera_dir);
     let camera_angle: f32 = scan.tok();
-    let camera = Camera::new_rectangle(&ray, camera_angle, width, height);
+    let camera = Camera::new_rectangle(&ray, camera_angle, width, height, sqrt_ray_per_pixel);
 
     let max_bounces: usize = scan.tok();
     let background = Float3::new(scan.tok(), scan.tok(), scan.tok());
@@ -117,7 +116,6 @@ pub fn read_input(filename: &str) -> Result<Settings> {
         width,
         height,
         n_threads,
-        ray_per_update,
         camera,
         background,
         number_of_updates: number_of_update,

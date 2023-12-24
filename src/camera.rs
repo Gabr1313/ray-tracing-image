@@ -4,27 +4,46 @@ use crate::object::{Intersectable, Plane};
 use crate::ray::Ray;
 use crate::utils::Float3;
 use crate::utils::Mat3;
+use std::sync::Arc;
 
 #[derive(Debug)]
 pub struct Camera {
-    pub rays: Vec<Ray>,
+    pub rays: Vec<Arc<[Ray]>>,
 }
 
 impl Camera {
-    pub fn new_rectangle(ray: &Ray, alpha: f32, n_rays_x: usize, n_rays_y: usize) -> Self {
+    pub fn new_rectangle(
+        ray: &Ray,
+        alpha: f32,
+        n_rays_x: usize,
+        n_rays_y: usize,
+        sqrt_ray_per_pixel: usize,
+    ) -> Self {
         assert!(0.0 < alpha && alpha < PI);
         assert!(n_rays_x > 1 && n_rays_y > 1);
 
         let ratio = n_rays_x as f32 / n_rays_y as f32;
         let (ul, ur, _, dl) = screen_corners(&ray, alpha, ratio);
+        let pixel_per_ray = sqrt_ray_per_pixel * sqrt_ray_per_pixel;
 
         let mut rays = Vec::with_capacity(n_rays_y * n_rays_x);
-        let dy = (dl - &ul) / (n_rays_y - 1) as f32;
-        let dx = (ur - &ul) / (n_rays_x - 1) as f32;
+        let dy = (dl - &ul) / n_rays_y as f32;
+        let dx = (ur - &ul) / n_rays_x as f32;
+        let ddy = dy / sqrt_ray_per_pixel as f32;
+        let ddx = dx / sqrt_ray_per_pixel as f32;
         for i in 0..n_rays_y {
+            let delta_y = dy * i as f32;
             for j in 0..n_rays_x {
-                let point = ul + &(dy * i as f32) + &(dx * j as f32);
-                rays.push(Ray::new_norm(ray.orig, point));
+                let point = ul + &delta_y + &(dx * j as f32);
+                let mut group = Vec::with_capacity(pixel_per_ray);
+                for ii in 0..sqrt_ray_per_pixel {
+                    let ddelta_y = ddy * ii as f32;
+                    for jj in 0..sqrt_ray_per_pixel {
+                        let point = point + &ddelta_y + &(ddx * jj as f32);
+                        group.push(Ray::new_norm(ray.orig, point));
+                    }
+                }
+                rays.push(group.into());
             }
         }
 
