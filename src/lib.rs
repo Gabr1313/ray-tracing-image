@@ -71,7 +71,7 @@ pub fn shoot_and_draw(settings: Settings) -> Result<()> {
                 let rgb = &mut image_status.u8s[i * 3..i * 3 + 3];
                 rgb[0] = (total_pix_sum.x * to_multiply) as u8;
                 rgb[1] = (total_pix_sum.y * to_multiply) as u8;
-                rgb[2] = (total_pix_sum.z * to_multiply) as u8; 
+                rgb[2] = (total_pix_sum.z * to_multiply) as u8;
             });
         }
         pool.wait();

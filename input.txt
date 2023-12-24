@@ -1,8 +1,8 @@
 _if_word_starts_with_underscore_is_ignored
-_dimension 2160 2160
+_dimension 720 720
 _threads 0 _0=auto
-_sqrt_ray_per_pixel 10
-_number_of_update 20
+_sqrt_ray_per_pixel 1
+_number_of_update 1
 _camera_position 0 0 0
 _camera_vector 1 0 0
 _camera_angle 1
