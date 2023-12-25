@@ -1,4 +1,3 @@
-use crate::algebra::gauss;
 use crate::object::Intersectable;
 use crate::ray::Ray;
 use crate::utils::Float3;
@@ -17,19 +16,17 @@ impl Plane {
         return Self { a, b, c, d };
     }
     pub fn from_points(p1: Float3, p2: Float3, p3: Float3) -> Self {
-        let mat = vec![
-            vec![p1.x, p1.y, p1.z, 1.0],
-            vec![p2.x, p2.y, p2.z, 1.0],
-            vec![p3.x, p3.y, p3.z, 1.0],
-        ];
-        if let Some(ans) = gauss(&mut mat.clone()) {
-            return Self::new(ans[0], ans[1], ans[2], -1.0);
-        } else {
-            panic!(
-                "Plane is not defined by points {:?}, {:?}, {:?}",
-                p1, p2, p3
-            );
-        }
+        let a1 = p2.x - p1.x;
+        let b1 = p2.y - p1.y;
+        let c1 = p2.z - p1.z;
+        let a2 = p3.x - p1.x;
+        let b2 = p3.y - p1.y;
+        let c2 = p3.z - p1.z;
+        let a = b1 * c2 - b2 * c1;
+        let b = a2 * c1 - a1 * c2;
+        let c = a1 * b2 - b1 * a2;
+        let d = -a * p1.x - b * p1.y - c * p1.z;
+        return Self { a, b, c, d };
     }
 }
 

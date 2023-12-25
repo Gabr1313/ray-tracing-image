@@ -1,15 +1,3 @@
-pub mod algebra;
-pub mod camera;
-pub mod input;
-pub mod object;
-pub mod ray;
-pub mod threadpool;
-pub mod utils;
-
-pub type Result<T> = std::result::Result<T, Box<dyn Error>>;
-
-use input::Settings;
-use ray::Ray;
 use std::error::Error;
 use std::fs::File;
 use std::io::Write;
