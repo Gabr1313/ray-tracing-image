@@ -1,3 +1,14 @@
+pub mod camera;
+pub mod input;
+pub mod object;
+pub mod ray;
+pub mod threadpool;
+pub mod utils;
+
+pub type Result<T> = std::result::Result<T, Box<dyn Error>>;
+
+use input::Settings;
+use ray::Ray;
 use std::error::Error;
 use std::fs::File;
 use std::io::Write;
@@ -16,7 +27,7 @@ impl ImageStatus {
     fn new(total_pixel: usize) -> Self {
         let float3s = vec![Float3::new(0.0, 0.0, 0.0); total_pixel];
         let u8s = vec![0; total_pixel * 3];
-        Self { float3s, u8s }
+        return Self { float3s, u8s };
     }
 }
 
@@ -65,9 +76,10 @@ pub fn shoot_and_draw(settings: Settings) -> Result<()> {
         pool.wait();
         file.seek(SeekFrom::Start(header_len))?;
         file.write_all(&image_status.lock().unwrap().u8s)?;
+        eprintln!("{} / {}", nou, number_of_updates);
     }
 
-    Ok(())
+    return Ok(());
 }
 
 fn trace_ray(ray: &Ray, objs: &[object::Object], bounces: usize, background: &Float3) -> Float3 {
@@ -90,9 +102,9 @@ fn trace_ray(ray: &Ray, objs: &[object::Object], bounces: usize, background: &Fl
             light.sum(&(obj.color * obj.emit_intensity * &color));
             color.mul(&obj.color);
         } else {
-            light.sum(&(*background * &color));
             break;
         }
     }
+    light.sum(&(*background * &color));
     return light;
 }

@@ -1,0 +1,38 @@
+_if_word_starts_with_underscore_is_ignored
+_dimension 1080 720
+_threads 0 _0=auto
+_sqrt_ray_per_pixel 4
+_number_of_update 1
+_camera_position -40 100 30
+_camera_vector  4 -10 -2
+_camera_angle 1
+_max_bounce 7 
+_background_color .1 .1 .1 
+_total_objects 20
+
+_triangle _point            _point           _point            _color             _refl _emission_intensity
+_________ _________________ _________________ _________________ _________________ _____ _____
+triangle      0     0     0    90    20    37    80   120    50   .63   .01     1    .5    .5
+triangle      0     0     0   -90    20    37   -80   120    50   .63   .01     1    .5    .5
+triangle      0     0     0    90   -20    30    70  -120    25   .63   .01     1    .5    .5
+triangle      0     0     0   -90   -20    30   -70  -120    25   .63   .01     1    .5    .5
+triangle      5    20     5     5    16     3     4    18     3     1     0     0    .5    .5
+triangle     -5    20     5    -5    16     3    -4    18     3     1     0     0    .5    .5
+triangle      0     0     0     5    16     3     4    18     3     1     0     0    .5    .5
+triangle      0     0     0    -5    16     3    -4    18     3     1     0     0    .5    .5
+triangle      5    20     5     0     0     0     4    18     3     1     0     0    .5    .5
+triangle     -5    20     5     0     0     0    -4    18     3     1     0     0    .5    .5
+triangle      5    20     5     5    16     3     0     0     0     1     0     0    .5    .5
+triangle     -5    20     5    -5    16     3     0     0     0     1     0     0    .5    .5
+triangle      0     0     0     4   -14     0     0   -12     3     0     0     1    .5    .5
+triangle      0     0     0    -4   -14     0     0   -12     3     0     0     1    .5    .5
+triangle      0     0     0     4   -14     0     0   -12    -3     0     0     1    .5    .5
+triangle      0     0     0    -4   -14     0     0   -12    -3     0     0     1    .5    .5
+triangle      0   -50     0     4   -14     0     0   -12     3     0     0     1    .5    .5
+triangle      0   -50     0    -4   -14     0     0   -12     3     0     0     1    .5    .5
+triangle      0   -50     0     4   -14     0     0   -12    -3     0     0     1    .5    .5
+triangle      0   -50     0    -4   -14     0     0   -12    -3     0     0     1    .5    .5
+
+_triangle _point    _point           _point            _color          _refl _emission_intensity
+_sphere   _position    _radius _color          _refl _emission_intensity
+_plane    _aX+bY+cZ-D=0            _color          _refl _emission_intensity
