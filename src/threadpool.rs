@@ -1,9 +1,11 @@
-use std::sync::{mpsc, Arc, Condvar, Mutex};
+use std::sync::{mpsc, Arc, Mutex};
 use std::thread;
+
 pub struct ThreadPool {
     workers: Vec<Worker>,
     sender: Option<mpsc::Sender<Job>>,
-    todos: Arc<(Mutex<usize>, Condvar)>,
+    waiter: mpsc::Receiver<()>,
+    todos: Arc<Mutex<usize>>
 }
 
 type Job = Box<dyn FnOnce() + Send + 'static>;
@@ -13,14 +15,16 @@ impl ThreadPool {
         let (sender, receiver) = mpsc::channel();
         let receiver = Arc::new(Mutex::new(receiver));
         let mut workers = Vec::with_capacity(size);
-        let todos = Arc::new((Mutex::new(0), Condvar::new()));
+        let (interrupt, waiter) = mpsc::channel();
+        let todos = Arc::new(Mutex::new(0));
         for id in 0..size {
-            workers.push(Worker::new(id, Arc::clone(&receiver), Arc::clone(&todos)));
+            workers.push(Worker::new(id, Arc::clone(&receiver), Arc::clone(&todos), interrupt.clone()));
         }
         ThreadPool {
             workers,
             sender: Some(sender),
-            todos,
+            waiter,
+            todos
         }
     }
 
@@ -33,12 +37,11 @@ impl ThreadPool {
     }
 
     pub fn wait(&self) {
-        let (lock, cvar) = &*self.todos;
-        let _ = cvar.wait_while(lock.lock().unwrap(), |n| *n > 0);
+        self.waiter.recv().unwrap();
     }
 
     pub fn add(&self, todos: usize) {
-        *self.todos.0.lock().unwrap() += todos;
+        *self.todos.lock().unwrap() += todos;
     }
 }
 
@@ -62,7 +65,8 @@ impl Worker {
     fn new(
         id: usize,
         receiver: Arc<Mutex<mpsc::Receiver<Job>>>,
-        todo: Arc<(Mutex<usize>, Condvar)>,
+        todos: Arc<Mutex<usize>>,
+        interrupt: mpsc::Sender<()>
     ) -> Worker {
         let thread = thread::spawn(move || loop {
             let message = receiver.lock().unwrap().recv();
@@ -70,7 +74,7 @@ impl Worker {
                 Ok(job) => job(),
                 Err(_) => break,
             }
-            sub_todo(&todo);
+            sub_todo(&todos,&interrupt);
         });
         Worker {
             _id: id,
@@ -80,10 +84,10 @@ impl Worker {
 }
 
 #[inline]
-fn sub_todo(todos: &Arc<(Mutex<usize>, Condvar)>) {
-    let mut n = todos.0.lock().unwrap();
+fn sub_todo(todos: &Arc<Mutex<usize>>, interrupt: &mpsc::Sender<()>) {
+    let mut n = todos.lock().unwrap();
     *n -= 1;
     if *n == 0 {
-        todos.1.notify_one();
+        interrupt.send(()).unwrap();
     }
 }
