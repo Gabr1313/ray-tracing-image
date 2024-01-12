@@ -3,4 +3,5 @@
 *.png
 *.o
 *.json
+*.cache*
 ray-tracer
