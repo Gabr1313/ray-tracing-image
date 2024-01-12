@@ -1,3 +1,6 @@
 /target
 *.ppm
 *.png
+*.o
+*.json
+ray-tracer
