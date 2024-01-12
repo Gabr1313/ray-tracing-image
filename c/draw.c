@@ -4,35 +4,37 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #include "algebra.h"
 #include "object.h"
 #include "ray.h"
 
-void shoot_a_pixel(Float3* pixel_to_update, int sqrt_ray_per_pixel,
-				   Ray3* upper_left, Float3* d_x, Float3* d_y,
-				   ObjectVec* objects, float max_bounces, Float3* background);
+void shoot_a_pixel(Float3* pixel_to_update, const int sqrt_ray_per_pixel,
+				   const Ray3* upper_left, const Float3* d_x, const Float3* d_y,
+				   const ObjectVec* objects, const float max_bounces,
+				   const Float3* background);
 
 int min(int a, int b) { return a < b ? a : b; }
 
-void shoot_and_draw(InputData* input_data, char* filename) {
+void shoot_and_draw(const InputData* input_data) {
 	char header[64];
 
-	int width = input_data->camera.width;
-	int height = input_data->camera.height;
-	int sqrt_ray_per_pixel = input_data->camera.sqrt_ray_per_pixel;
-	int ray_per_pixel = sqrt_ray_per_pixel * sqrt_ray_per_pixel;
-	int number_of_updates = input_data->number_of_updates;
-	int max_bounces = input_data->max_bounces;
-	Ray3* upper_left = &input_data->camera.upper_left;
-	Float3* delta_x = &input_data->camera.delta_x;
-	Float3* delta_y = &input_data->camera.delta_y;
-	Float3* d_x = &input_data->camera.d_x;
-	Float3* d_y = &input_data->camera.d_y;
-	Float3* background = &input_data->background_color;
-	ObjectVec* objects = &input_data->objects;
+	const int width = input_data->camera.width;
+	const int height = input_data->camera.height;
+	const int sqrt_ray_per_pixel = input_data->camera.sqrt_ray_per_pixel;
+	const int ray_per_pixel = sqrt_ray_per_pixel * sqrt_ray_per_pixel;
+	const int number_of_updates = input_data->number_of_updates;
+	const int max_bounces = input_data->max_bounces;
+	const Ray3* upper_left = &input_data->camera.upper_left;
+	const Float3* delta_x = &input_data->camera.delta_x;
+	const Float3* delta_y = &input_data->camera.delta_y;
+	const Float3* d_x = &input_data->camera.d_x;
+	const Float3* d_y = &input_data->camera.d_y;
+	const Float3* background = &input_data->background_color;
+	const ObjectVec* objects = &input_data->objects;
 
-	int content_len = width * height * 3;
+	const int content_len = width * height * 3;
 	Float3* pixel_sum = calloc(width * height, sizeof(Float3));
 	unsigned char* buffer = malloc(content_len * sizeof(unsigned char));
 	if (pixel_sum == NULL) {
@@ -42,24 +44,14 @@ void shoot_and_draw(InputData* input_data, char* filename) {
 	}
 
 	sprintf(header, "P6\n%d %d\n255\n", width, height);
-	int heder_len = strlen(header);
+	const int heder_len = strlen(header);
 
-	FILE* file = fopen(filename, "w");
-	if (file == NULL) {
-		fprintf(stderr, "Error: can't open file %s\n", filename);
-		exit(-1);
-	}
+	fwrite(header, sizeof(char), heder_len, stdout);
 
-	fwrite(header, sizeof(char), heder_len, file);
-	if (file == NULL) {
-		fprintf(stderr, "Error: can't open file %s\n", filename);
-		exit(-1);
-	}
-
-	srand(0);  // TODO: useless, where to put instead?
+	srand(time(NULL));
 	fprintf(stderr, "0 / %d", number_of_updates);
 	for (int nou = 1; nou <= number_of_updates; nou++) {
-		float to_multiply = 255.0f / (nou * ray_per_pixel);
+		const float to_multiply = 255.0f / (nou * ray_per_pixel);
 		Ray3 row = *upper_left;
 		for (int i = 0, idx = 0, idx_buffer = 0; i < height; i++) {
 			Ray3 col = row;
@@ -73,35 +65,36 @@ void shoot_and_draw(InputData* input_data, char* filename) {
 			}
 			float3_add_eq(&row.direction, delta_y);
 		}
-		fseek(file, heder_len, SEEK_SET);
-		fwrite(buffer, sizeof(unsigned char), content_len, file);
-		fflush(file);
+		fseek(stdout, heder_len, SEEK_SET);
+		fwrite(buffer, sizeof(unsigned char), content_len, stdout);
+		fflush(stdout);
 		fprintf(stderr, "\r%d / %d", nou, number_of_updates);
 	}
-	fclose(file);
+	fprintf(stderr, "\n");
 	free(buffer);
 	free(pixel_sum);
 	free(input_data->objects.ptr);
 }
 
-void shoot_a_pixel(Float3* pixel_to_update, int sqrt_ray_per_pixel,
-				   Ray3* upper_left, Float3* d_x, Float3* d_y,
-				   ObjectVec* objects, float max_bounces, Float3* background) {
+void shoot_a_pixel(Float3* pixel_to_update, const int sqrt_ray_per_pixel,
+				   const Ray3* upper_left, const Float3* d_x, const Float3* d_y,
+				   const ObjectVec* objects, const float max_bounces,
+				   const Float3* background) {
 	Ray3 ray = *upper_left;
-	Float3 p0 = ray.direction;
+	Float3 starting_direction = ray.direction;
 	for (int ii = 0; ii < sqrt_ray_per_pixel; ii++) {
-		ray.direction = p0;
+		ray.direction = starting_direction;
 		for (int jj = 0; jj < sqrt_ray_per_pixel; jj++) {
 			Float3 light = trace_ray(&ray, objects, max_bounces, background);
 			float3_add_eq(pixel_to_update, &light);
 			float3_add_eq(&ray.direction, d_x);
 		}
-		float3_add_eq(&p0, d_y);
+		float3_add_eq(&starting_direction, d_y);
 	}
 }
 
-Float3 trace_ray(Ray3* ray, ObjectVec* objects, int max_bounces,
-				 Float3* background) {
+Float3 trace_ray(const Ray3* ray, const ObjectVec* objects, const int max_bounces,
+				 const Float3* background) {
 	Float3 color = float3_new(1, 1, 1);
 	Float3 light = float3_new(0, 0, 0);
 	Ray3 local_ray = *ray;
@@ -120,13 +113,13 @@ Float3 trace_ray(Ray3* ray, ObjectVec* objects, int max_bounces,
 			}
 		}
 		if (nearest_object == NULL) {
-			Float3 added_light = float3_mul_float3(background, &color);
+			const Float3 added_light = float3_mul_float3(background, &color);
 			float3_add_eq(&light, &added_light);
 			break;
 		} else {
 			prev = nearest_object;
-			object_reflect(nearest_object, &local_ray, nearest_distance);
-			Float3 added_light =
+			object_reflect_ray(nearest_object, &local_ray, nearest_distance);
+			const Float3 added_light =
 				float3_mul_float3(&nearest_object->light_emitted, &color);
 			float3_add_eq(&light, &added_light);
 			float3_mul_eq_float3(&color, &nearest_object->color);

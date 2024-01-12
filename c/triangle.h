@@ -9,6 +9,6 @@ typedef struct _Triangle {
 	Ray2 r1, r2, r3;
 } Triangle;
 
-Triangle triangle_new(Float3* p1, Float3* p2, Float3* p3);
-float triangle_intersect_distance(void* triangle, Ray3* ray);
-Float3 triangle_normal_vector(void* triangle, Float3* point);
+Triangle triangle_new(const Float3* p1, const Float3* p2, const Float3* p3);
+float triangle_intersect_distance(const void* triangle, const Ray3* ray);
+Float3 triangle_normal_vector(const void* triangle, const Float3* point);

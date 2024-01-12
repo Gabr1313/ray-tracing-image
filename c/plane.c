@@ -2,20 +2,20 @@
 
 #include <math.h>
 
-Plane plane_new(float a, float b, float c, float d) {
+Plane plane_new(const float a, const float b, const float c, const float d) {
 	Plane plane;
 	plane.normal = float3_new(a, b, c);
 	plane.d = d;
 	return plane;
 }
 
-Plane plane_from_points(Float3* p1, Float3* p2, Float3* p3) {
-	float a1 = p2->x - p1->x;
-	float b1 = p2->y - p1->y;
-	float c1 = p2->z - p1->z;
-	float a2 = p3->x - p1->x;
-	float b2 = p3->y - p1->y;
-	float c2 = p3->z - p1->z;
+Plane plane_from_points(const Float3* p1, const Float3* p2, const Float3* p3) {
+	const float a1 = p2->x - p1->x;
+	const float b1 = p2->y - p1->y;
+	const float c1 = p2->z - p1->z;
+	const float a2 = p3->x - p1->x;
+	const float b2 = p3->y - p1->y;
+	const float c2 = p3->z - p1->z;
 	Plane plane;
 	plane.normal.x = b1 * c2 - b2 * c1;
 	plane.normal.y = a2 * c1 - a1 * c2;
@@ -24,16 +24,16 @@ Plane plane_from_points(Float3* p1, Float3* p2, Float3* p3) {
 	return plane;
 }
 
-float plane_intersect_distance(void* plane, Ray3* ray) {
-	Plane* pln = (Plane*)plane;
-	float a = float3_dot(&pln->normal, &ray->direction);
+float plane_intersect_distance(const void* plane,const Ray3* ray) {
+	const Plane* pln = (Plane*)plane;
+	const float a = float3_dot(&pln->normal, &ray->direction);
 	if (fabsf(a) < 1e-6) return -1;
-	float b = float3_dot(&pln->normal, &ray->origin) + pln->d;
-	float t = -b / a;
-	return t;
+	const float b = float3_dot(&pln->normal, &ray->origin) + pln->d;
+	return -b / a;
 }
 
-Float3 plane_normal_vector(void* plane, __attribute__((unused)) Float3* point) {
-	Plane* pln = (Plane*)plane;
+Float3 plane_normal_vector(const void* plane,
+						   const __attribute__((unused)) Float3* point) {
+	const Plane* pln = (Plane*)plane;
 	return pln->normal;
 }

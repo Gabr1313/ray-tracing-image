@@ -21,21 +21,21 @@ typedef struct _Object {
 	Shape shape;
 	Float3 color, light_emitted;
 	float reflection;
-	float (*intersect_distance)(void* obj, Ray3* ray);
-	Float3 (*normal_vector)(void* obj, Float3* point);
+	float (*intersect_distance)(const void* obj,const  Ray3* ray);
+	Float3 (*normal_vector)(const void* obj,const  Float3* point);
 } Object;
 
-Object object_new(int shape_id, Shape* shape, Float3* color,
-				  float emission_intensity, float reflection);
-float object_intersect_distance(Object* object, Ray3* ray);
-Float3 object_normal_vector(Object* object, Ray3* ray);
-void object_reflect(Object* object, Ray3* ray, float distance);
-Float3 half_sphere_random(Float3*);
+Object object_new(const int shape_id, const Shape* shape, const Float3* color,
+				  const float emission_intensity, const float reflection);
+float object_intersect_distance(const Object* object, const Ray3* ray);
+Float3 object_normal_vector(const Object* object, const Ray3* ray);
+void object_reflect_ray(const Object* object, Ray3* ray, const float distance);
+Float3 half_sphere_random(const Float3*);
 
 typedef struct _ObjectContainer {
 	Object* ptr;
 	int size, capacity;
 } ObjectVec;
 
-ObjectVec objectvec_new(int n);
-void object_vec_push(ObjectVec* object_v, Object* object);
+ObjectVec objectvec_new(const int n);
+void object_vec_push(ObjectVec* object_v, const Object* object);

@@ -10,4 +10,4 @@ typedef struct _InputData {
 	ObjectVec objects;
 } InputData;
 
-InputData scan_input(char *filename);
+InputData scan_input();

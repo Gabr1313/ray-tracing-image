@@ -9,5 +9,6 @@ typedef struct _Camera {
 	int width, height, sqrt_ray_per_pixel;
 } Camera;
 
-Camera camera_new(Float3* position, Float3* direction, float angle, int pixel_x,
-				  int pixel_y, int sqrt_ray_per_pixel);
+Camera camera_new(const Float3* position, const Float3* direction,
+				  const float angle, int const pixel_x, const int pixel_y,
+				  const int sqrt_ray_per_pixel);

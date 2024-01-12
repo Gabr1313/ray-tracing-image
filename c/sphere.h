@@ -8,7 +8,7 @@ typedef struct _Sphere {
 	float radius;
 } Sphere;
 
-Sphere sphere_new(Float3* center, float radius);
+Sphere sphere_new(const Float3* center, const float radius);
 
-float sphere_intersect_distance(void* sphere, Ray3* ray);
-Float3 sphere_normal_vector(void* sphere, Float3* point);
+float sphere_intersect_distance(const void* sphere, const Ray3* ray);
+Float3 sphere_normal_vector(const void* sphere, const Float3* point);

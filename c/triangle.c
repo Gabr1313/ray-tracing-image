@@ -8,11 +8,11 @@
 #define XY 1
 #define YZ 2
 #define ZX 3
-int projection_type(Plane* plane);
+int projection_type(const Plane* plane);
 
-Triangle triangle_new(Float3* p1, Float3* p2, Float3* p3) {
-	Plane plane = plane_from_points(p1, p2, p3);
-	int projection = projection_type(&plane);
+Triangle triangle_new(const Float3* p1, const Float3* p2, const Float3* p3) {
+	const Plane plane = plane_from_points(p1, p2, p3);
+	const int projection = projection_type(&plane);
 	Float2 v1, v2, v3;
 	if (projection == XY) {
 		v1 = float2_new(p1->x, p1->y);
@@ -28,8 +28,8 @@ Triangle triangle_new(Float3* p1, Float3* p2, Float3* p3) {
 		v3 = float2_new(p3->z, p3->x);
 	}
 
-	Float2 s1 = float2_sub(&v3, &v1);
-	Float2 s2 = float2_sub(&v2, &v1);
+	const Float2 s1 = float2_sub(&v3, &v1);
+	const Float2 s2 = float2_sub(&v2, &v1);
 	if (float2_cross(&s1, &s2) < 0) {
 		Float2 tmp = v2;
 		v2 = v3;
@@ -50,7 +50,7 @@ Triangle triangle_new(Float3* p1, Float3* p2, Float3* p3) {
 	return triangle;
 }
 
-int projection_type(Plane* plane) {
+int projection_type(const Plane* plane) {
 	if (fabsf(plane->normal.x) >= fabsf(plane->normal.y) &&
 		fabsf(plane->normal.x) >= fabsf(plane->normal.z))
 		return YZ;
@@ -60,14 +60,14 @@ int projection_type(Plane* plane) {
 	return XY;
 }
 
-float triangle_intersect_distance(void* triangle, Ray3* ray) {
-	Triangle* tri = (Triangle*)triangle;
-	float t = plane_intersect_distance(&tri->plane, ray);
-	if (t < 0.0) return t;
-	Float3 movement = float3_mul(&ray->direction, t);
-	Float3 point = float3_add(&ray->origin, &movement);
+float triangle_intersect_distance(const void* triangle, const Ray3* ray) {
+	const Triangle* tri = (Triangle*)triangle;
+	const float distance = plane_intersect_distance(&tri->plane, ray);
+	if (distance < 0.0) return distance;
+	const Float3 movement = float3_mul(&ray->direction, distance);
+	const Float3 point = float3_add(&ray->origin, &movement);
 	float cross1, cross2, cross3;
-	int type = projection_type(&tri->plane);
+	const int type = projection_type(&tri->plane);
 	Float2 projection;
 	if (type == XY) projection = float2_new(point.x, point.y);
 	else if (type == YZ) projection = float2_new(point.y, point.z);
@@ -78,11 +78,11 @@ float triangle_intersect_distance(void* triangle, Ray3* ray) {
 	cross2 = float2_cross(&tri->r2.direction, &tmp);
 	tmp = float2_sub(&projection, &tri->r3.origin);
 	cross3 = float2_cross(&tri->r3.direction, &tmp);
-	if (cross1 < 0.0 && cross2 < 0.0 && cross3 < 0.0) return t;
+	if (cross1 < 0.0 && cross2 < 0.0 && cross3 < 0.0) return distance;
 	return -1;
 }
 
-Float3 triangle_normal_vector(void* triangle, Float3* point) {
+Float3 triangle_normal_vector(const void* triangle, const Float3* point) {
 	Triangle* tri = (Triangle*)triangle;
 	return plane_normal_vector(&tri->plane, point);
 }

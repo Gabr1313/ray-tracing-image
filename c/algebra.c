@@ -1,7 +1,7 @@
 #include "algebra.h"
 
 #include <math.h>
-Float3 float3_new(float x, float y, float z) {
+Float3 float3_new(const float x, const float y, const float z) {
 	Float3 f;
 	f.x = x;
 	f.y = y;
@@ -9,11 +9,11 @@ Float3 float3_new(float x, float y, float z) {
 	return f;
 }
 
-float float3_dot(Float3* lhs, Float3* rhs) {
+float float3_dot(const Float3* lhs, const Float3* rhs) {
 	return lhs->x * rhs->x + lhs->y * rhs->y + lhs->z * rhs->z;
 }
 
-Float3 float3_cross(Float3* lhs, Float3* rhs) {
+Float3 float3_cross(const Float3* lhs, const Float3* rhs) {
 	Float3 f;
 	f.x = lhs->y * rhs->z - lhs->z * rhs->y;
 	f.y = lhs->z * rhs->x - lhs->x * rhs->z;
@@ -21,7 +21,7 @@ Float3 float3_cross(Float3* lhs, Float3* rhs) {
 	return f;
 }
 
-Float3 float3_add(Float3* lhs, Float3* rhs) {
+Float3 float3_add(const Float3* lhs, const Float3* rhs) {
 	Float3 f;
 	f.x = lhs->x + rhs->x;
 	f.y = lhs->y + rhs->y;
@@ -29,13 +29,13 @@ Float3 float3_add(Float3* lhs, Float3* rhs) {
 	return f;
 }
 
-void float3_add_eq(Float3* lhs, Float3* rhs) {
+void float3_add_eq(Float3* lhs, const Float3* rhs) {
 	lhs->x += rhs->x;
 	lhs->y += rhs->y;
 	lhs->z += rhs->z;
 }
 
-Float3 float3_sub(Float3* lhs, Float3* rhs) {
+Float3 float3_sub(const Float3* lhs, const Float3* rhs) {
 	Float3 f;
 	f.x = lhs->x - rhs->x;
 	f.y = lhs->y - rhs->y;
@@ -43,13 +43,13 @@ Float3 float3_sub(Float3* lhs, Float3* rhs) {
 	return f;
 }
 
-void float3_sub_eq(Float3* lhs, Float3* rhs) {
+void float3_sub_eq(Float3* lhs, const Float3* rhs) {
 	lhs->x -= rhs->x;
 	lhs->y -= rhs->y;
 	lhs->z -= rhs->z;
 }
 
-Float3 float3_mul(Float3* lhs, float rhs) {
+Float3 float3_mul(const Float3* lhs, const float rhs) {
 	Float3 f;
 	f.x = lhs->x * rhs;
 	f.y = lhs->y * rhs;
@@ -57,7 +57,7 @@ Float3 float3_mul(Float3* lhs, float rhs) {
 	return f;
 }
 
-Float3 float3_mul_float3(Float3* lhs, Float3* rhs) {
+Float3 float3_mul_float3(const Float3* lhs, const Float3* rhs) {
 	Float3 f;
 	f.x = lhs->x * rhs->x;
 	f.y = lhs->y * rhs->y;
@@ -65,30 +65,29 @@ Float3 float3_mul_float3(Float3* lhs, Float3* rhs) {
 	return f;
 }
 
-void float3_mul_eq(Float3* lhs, float rhs) {
+void float3_mul_eq(Float3* lhs, const float rhs) {
 	lhs->x *= rhs;
 	lhs->y *= rhs;
 	lhs->z *= rhs;
 }
 
-Float3 float3_mul_eq_float3(Float3* lhs, Float3* rhs) {
+void float3_mul_eq_float3(Float3* lhs, const Float3* rhs) {
 	lhs->x *= rhs->x;
 	lhs->y *= rhs->y;
 	lhs->z *= rhs->z;
-	return *lhs;
 }
 
-Float3 float3_div(Float3* lhs, float rhs) {
+Float3 float3_div(const Float3* lhs, const float rhs) {
 	float inv = 1.0 / rhs;
 	return float3_mul(lhs, inv);
 }
 
-void float3_div_eq(Float3* lhs, float rhs) {
+void float3_div_eq(Float3* lhs, const float rhs) {
 	float inv = 1.0 / rhs;
 	float3_mul_eq(lhs, inv);
 }
 
-Float3 float3_normalize(Float3* v) {
+Float3 float3_normalize(const Float3* v) {
 	Float3 f = *v;
 	float3_normalize_eq(&f);
 	return f;
@@ -102,14 +101,14 @@ void float3_normalize_eq(Float3* v) {
 	v->z *= inv;
 }
 
-int float3_eq(Float3* lhs, Float3* rhs) {
+int float3_eq(const Float3* lhs, const Float3* rhs) {
 	return lhs->x == rhs->x && lhs->y == rhs->y && lhs->z == rhs->z;
 }
 
-Float3 float3_mirror(Float3* lhs, Float3* rhs) {
-	Float3 normalized = float3_normalize(rhs);
-	float coeff = 2 * float3_dot(lhs, &normalized);
-	Float3 sub = float3_mul(&normalized, coeff);
+Float3 float3_mirror(const Float3* lhs, const Float3* rhs) {
+	const Float3 normalized = float3_normalize(rhs);
+	const float coeff = 2 * float3_dot(lhs, &normalized);
+	const Float3 sub = float3_mul(&normalized, coeff);
 	return float3_sub(lhs, &sub);
 }
 
@@ -119,29 +118,30 @@ void float3_invert_eq(Float3* lhs) {
 	lhs->z = -lhs->z;
 }
 
-Float2 float2_new(float x, float y) {
+Float2 float2_new(const float x, const float y) {
 	Float2 f;
 	f.x = x;
 	f.y = y;
 	return f;
 }
 
-Float2 float2_sub(Float2* lhs, Float2* rhs) {
+Float2 float2_sub(const Float2* lhs, const Float2* rhs) {
 	Float2 f;
 	f.x = lhs->x - rhs->x;
 	f.y = lhs->y - rhs->y;
 	return f;
 }
 
-float float2_dot(Float2* lhs, Float2* rhs) {
+float float2_dot(const Float2* lhs, const Float2* rhs) {
 	return lhs->x * rhs->x + lhs->y * rhs->y;
 }
-float float2_cross(Float2* lhs, Float2* rhs) {
+float float2_cross(const Float2* lhs, const Float2* rhs) {
 	return lhs->x * rhs->y - lhs->y * rhs->x;
 }
 
-Mat3 mat3_new(float m00, float m01, float m02, float m10, float m11, float m12,
-			  float m20, float m21, float m22) {
+Mat3 mat3_new(const float m00, const float m01, const float m02,
+			  const float m10, const float m11, const float m12,
+			  const float m20, const float m21, const float m22) {
 	Mat3 mat;
 	mat.m[0][0] = m00;
 	mat.m[0][1] = m01;
@@ -155,7 +155,7 @@ Mat3 mat3_new(float m00, float m01, float m02, float m10, float m11, float m12,
 	return mat;
 }
 
-Mat3 mat3_yaw(float angle) {
+Mat3 mat3_yaw(const float angle) {
 	Mat3 mat;
 	mat.m[0][0] = cosf(angle);
 	mat.m[0][1] = 0;
@@ -169,7 +169,7 @@ Mat3 mat3_yaw(float angle) {
 	return mat;
 }
 
-Mat3 mat3_pitch(float angle) {
+Mat3 mat3_pitch(const float angle) {
 	Mat3 mat;
 	mat.m[0][0] = 1;
 	mat.m[0][1] = 0;
@@ -183,7 +183,7 @@ Mat3 mat3_pitch(float angle) {
 	return mat;
 }
 
-Mat3 mat3_roll(float angle) {
+Mat3 mat3_roll(const float angle) {
 	Mat3 mat;
 	mat.m[0][0] = cosf(angle);
 	mat.m[0][1] = -sinf(angle);
@@ -197,7 +197,7 @@ Mat3 mat3_roll(float angle) {
 	return mat;
 }
 
-Float3 mat3_mul_float3(Mat3* lhs, Float3* rhs) {
+Float3 mat3_mul_float3(const Mat3* lhs, const Float3* rhs) {
 	Float3 f;
 	f.x = lhs->m[0][0] * rhs->x + lhs->m[0][1] * rhs->y + lhs->m[0][2] * rhs->z;
 	f.y = lhs->m[1][0] * rhs->x + lhs->m[1][1] * rhs->y + lhs->m[1][2] * rhs->z;

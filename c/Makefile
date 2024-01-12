@@ -33,7 +33,7 @@ $(TARGET): $(OBJS)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 run: $(TARGET)
-	./$(TARGET) < input.txt
+	./$(TARGET) <input.txt >draw.ppm
 
 clean: 
 	rm -f $(OBJS) $(TARGET)
