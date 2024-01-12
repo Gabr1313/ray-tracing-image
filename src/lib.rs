@@ -54,7 +54,7 @@ pub fn shoot_and_draw(settings: Settings) -> Result<()> {
     let pool = ThreadPool::new(n_threads);
     let image_status = Arc::new(Mutex::new(ImageStatus::new(width * height)));
     for nou in 1..=number_of_updates {
-        let to_multiply = 256.0 / (nou * ray_per_pixel) as f32;
+        let to_multiply = 255.0 / (nou * ray_per_pixel) as f32;
         pool.add(camera.len());
         for (i, ray_group) in camera.iter().enumerate() {
             let objs = Arc::clone(&objs);

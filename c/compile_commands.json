@@ -1,0 +1,65 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-std=c17",
+      "-Wall",
+      "-Wextra",
+      "-O0",
+      "-fsanitize=address",
+      "-DDEBUG",
+      "-g",
+      "-Wno-sign-conversion",
+      "-D_GLIBCXX_ASSERTIONS",
+      "-c",
+      "-o",
+      "scanner.o",
+      "scanner.c"
+    ],
+    "directory": "/home/gabri/gitMine/ray-tracing-image/c",
+    "file": "/home/gabri/gitMine/ray-tracing-image/c/scanner.c",
+    "output": "/home/gabri/gitMine/ray-tracing-image/c/scanner.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-std=c17",
+      "-Wall",
+      "-Wextra",
+      "-O0",
+      "-fsanitize=address",
+      "-DDEBUG",
+      "-g",
+      "-Wno-sign-conversion",
+      "-D_GLIBCXX_ASSERTIONS",
+      "-c",
+      "-o",
+      "camera.o",
+      "camera.c"
+    ],
+    "directory": "/home/gabri/gitMine/ray-tracing-image/c",
+    "file": "/home/gabri/gitMine/ray-tracing-image/c/camera.c",
+    "output": "/home/gabri/gitMine/ray-tracing-image/c/camera.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-std=c17",
+      "-Wall",
+      "-Wextra",
+      "-O0",
+      "-fsanitize=address",
+      "-DDEBUG",
+      "-g",
+      "-Wno-sign-conversion",
+      "-D_GLIBCXX_ASSERTIONS",
+      "-c",
+      "-o",
+      "draw.o",
+      "draw.c"
+    ],
+    "directory": "/home/gabri/gitMine/ray-tracing-image/c",
+    "file": "/home/gabri/gitMine/ray-tracing-image/c/draw.c",
+    "output": "/home/gabri/gitMine/ray-tracing-image/c/draw.o"
+  }
+]

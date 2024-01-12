@@ -1,0 +1,136 @@
+#include "draw.h"
+
+#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "algebra.h"
+#include "object.h"
+#include "ray.h"
+
+void shoot_a_pixel(Float3* pixel_to_update, int sqrt_ray_per_pixel,
+				   Ray3* upper_left, Float3* d_x, Float3* d_y,
+				   ObjectVec* objects, float max_bounces, Float3* background);
+
+int min(int a, int b) { return a < b ? a : b; }
+
+void shoot_and_draw(InputData* input_data, char* filename) {
+	char header[64];
+
+	int width = input_data->camera.width;
+	int height = input_data->camera.height;
+	int sqrt_ray_per_pixel = input_data->camera.sqrt_ray_per_pixel;
+	int ray_per_pixel = sqrt_ray_per_pixel * sqrt_ray_per_pixel;
+	int number_of_updates = input_data->number_of_updates;
+	int max_bounces = input_data->max_bounces;
+	Ray3* upper_left = &input_data->camera.upper_left;
+	Float3* delta_x = &input_data->camera.delta_x;
+	Float3* delta_y = &input_data->camera.delta_y;
+	Float3* d_x = &input_data->camera.d_x;
+	Float3* d_y = &input_data->camera.d_y;
+	Float3* background = &input_data->background_color;
+	ObjectVec* objects = &input_data->objects;
+
+	int content_len = width * height * 3;
+	Float3* pixel_sum = calloc(width * height, sizeof(Float3));
+	unsigned char* buffer = malloc(content_len * sizeof(unsigned char));
+	if (pixel_sum == NULL) {
+		fprintf(stderr, "Error: can't allocate memory for %d pixel\n",
+				width * height);
+		exit(-1);
+	}
+
+	sprintf(header, "P6\n%d %d\n255\n", width, height);
+	int heder_len = strlen(header);
+
+	FILE* file = fopen(filename, "w");
+	if (file == NULL) {
+		fprintf(stderr, "Error: can't open file %s\n", filename);
+		exit(-1);
+	}
+
+	fwrite(header, sizeof(char), heder_len, file);
+	if (file == NULL) {
+		fprintf(stderr, "Error: can't open file %s\n", filename);
+		exit(-1);
+	}
+
+	srand(0);  // TODO: useless, where to put instead?
+	fprintf(stderr, "0 / %d", number_of_updates);
+	for (int nou = 1; nou <= number_of_updates; nou++) {
+		float to_multiply = 255.0f / (nou * ray_per_pixel);
+		Ray3 row = *upper_left;
+		for (int i = 0, idx = 0, idx_buffer = 0; i < height; i++) {
+			Ray3 col = row;
+			for (int j = 0; j < width; j++, idx++) {
+				shoot_a_pixel(&pixel_sum[idx], sqrt_ray_per_pixel, &col, d_x,
+							  d_y, objects, max_bounces, background);
+				buffer[idx_buffer++] = min(pixel_sum[idx].x * to_multiply, 255);
+				buffer[idx_buffer++] = min(pixel_sum[idx].y * to_multiply, 255);
+				buffer[idx_buffer++] = min(pixel_sum[idx].z * to_multiply, 255);
+				float3_add_eq(&col.direction, delta_x);
+			}
+			float3_add_eq(&row.direction, delta_y);
+		}
+		fseek(file, heder_len, SEEK_SET);
+		fwrite(buffer, sizeof(unsigned char), content_len, file);
+		fflush(file);
+		fprintf(stderr, "\r%d / %d", nou, number_of_updates);
+	}
+	fclose(file);
+	free(buffer);
+	free(pixel_sum);
+	free(input_data->objects.ptr);
+}
+
+void shoot_a_pixel(Float3* pixel_to_update, int sqrt_ray_per_pixel,
+				   Ray3* upper_left, Float3* d_x, Float3* d_y,
+				   ObjectVec* objects, float max_bounces, Float3* background) {
+	Ray3 ray = *upper_left;
+	Float3 p0 = ray.direction;
+	for (int ii = 0; ii < sqrt_ray_per_pixel; ii++) {
+		ray.direction = p0;
+		for (int jj = 0; jj < sqrt_ray_per_pixel; jj++) {
+			Float3 light = trace_ray(&ray, objects, max_bounces, background);
+			float3_add_eq(pixel_to_update, &light);
+			float3_add_eq(&ray.direction, d_x);
+		}
+		float3_add_eq(&p0, d_y);
+	}
+}
+
+Float3 trace_ray(Ray3* ray, ObjectVec* objects, int max_bounces,
+				 Float3* background) {
+	Float3 color = float3_new(1, 1, 1);
+	Float3 light = float3_new(0, 0, 0);
+	Ray3 local_ray = *ray;
+	Object* prev = NULL;
+	for (int i = 0; i < max_bounces; i++) {
+		Object* nearest_object = NULL;
+		float nearest_distance = INFINITY;
+		for (int j = 0; j < objects->size; j++) {
+			Object* object_found = &objects->ptr[j];
+			float distance_found =
+				object_intersect_distance(object_found, &local_ray);
+			if (distance_found > 0 && prev != object_found &&
+				distance_found < nearest_distance) {
+				nearest_object = object_found;
+				nearest_distance = distance_found;
+			}
+		}
+		if (nearest_object == NULL) {
+			Float3 added_light = float3_mul_float3(background, &color);
+			float3_add_eq(&light, &added_light);
+			break;
+		} else {
+			prev = nearest_object;
+			object_reflect(nearest_object, &local_ray, nearest_distance);
+			Float3 added_light =
+				float3_mul_float3(&nearest_object->light_emitted, &color);
+			float3_add_eq(&light, &added_light);
+			float3_mul_eq_float3(&color, &nearest_object->color);
+		}
+	}
+	return light;
+}

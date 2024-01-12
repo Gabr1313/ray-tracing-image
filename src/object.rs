@@ -14,7 +14,7 @@ use std::f32::consts::PI;
 
 pub trait Intersectable {
     fn intersect(&self, ray: &Ray) -> Option<f32>;
-    fn normal(&self, point: &Float3, start_point: &Float3) -> Ray;
+    fn normal(&self, ray: &Ray) -> Ray;
 }
 
 pub struct Object {
@@ -47,31 +47,27 @@ impl Object {
     }
 
     pub fn reflect(&self, ray: &mut Ray, t: f32) {
-        let start_point = ray.orig;
         ray.move_along(t);
-        let norm = self.shape.normal(&ray.orig, &start_point);
+        let norm = self.shape.normal(&ray);
         let mut rng = rand::thread_rng();
         let flip = rng.gen_range(0.0..=1.0);
         if flip < self.reflection {
             ray.dir = ray.dir.reflect(&norm.dir);
         } else {
-            ray.dir = half_sphere_cosine_distribution(norm, &mut rng);
+            ray.dir = half_sphere_random(norm, &mut rng);
         }
     }
 }
 
-fn half_sphere_cosine_distribution(norm: Ray, rng: &mut ThreadRng) -> Float3 {
+fn half_sphere_random(norm: Ray, rng: &mut ThreadRng) -> Float3 {
     let phi = rng.gen_range(0.0..2.0 * PI);
     let theta = rng.gen_range(0.0..PI);
     let sin_theta = theta.sin();
-    let x = sin_theta * phi.cos();
-    let y = sin_theta * phi.sin();
-    let z = theta.cos();
+    let mut dir = Float3::new(sin_theta * phi.cos(), sin_theta * phi.sin(), theta.cos());
     debug_assert!(norm.dir.norm() - 1.0 < 0.0001);
-    debug_assert!(Float3::new(x, y, z).norm() - 1.0 < 0.0001);
-    let mut dir = Float3::new(x, y, z) + &norm.dir;
-    if !(dir.x != -norm.dir.x && dir.y == -norm.dir.y && dir.z == -norm.dir.z) {
-        dir.normalize();
+    debug_assert!(dir.norm() - 1.0 < 0.0001);
+    if norm.dir.dot(&dir) < 0.0 {
+        dir = dir.reflect(&norm.dir);
     }
     return dir;
 }

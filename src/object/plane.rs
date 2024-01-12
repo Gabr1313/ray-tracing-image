@@ -43,16 +43,9 @@ impl Intersectable for Plane {
         }
         return Some(t);
     }
-    fn normal(&self, point: &Float3, start_point: &Float3) -> Ray {
-        let mut ray = Ray::new_norm(*point, Float3::new(self.a, self.b, self.c));
-        let tmp = ray.orig + &ray.dir;
-        if ((ray.orig.x - start_point.x).abs()
-            + (ray.orig.y - start_point.y).abs()
-            + (ray.orig.z - start_point.z).abs())
-            < ((tmp.x - start_point.x).abs()
-                + (tmp.y - start_point.y).abs()
-                + (tmp.z - start_point.z).abs())
-        {
+    fn normal(&self, ray: &Ray) -> Ray {
+        let mut ray = Ray::new_norm(ray.orig, Float3::new(self.a, self.b, self.c));
+        if ray.dir.dot(&ray.orig) > 0.0 {
             ray.dir.invert();
         }
         return ray;

@@ -39,16 +39,9 @@ impl Intersectable for Sphere {
         return Some(t);
     }
 
-    fn normal(&self, point: &Float3, start_point: &Float3) -> Ray {
-        let mut ray = Ray::new_norm(*point, *point - &self.center);
-        let tmp = ray.dir + &ray.orig;
-        if ((ray.orig.x - start_point.x).abs()
-            + (ray.orig.y - start_point.y).abs()
-            + (ray.orig.z - start_point.z).abs())
-            < ((tmp.x - start_point.x).abs()
-                + (tmp.y - start_point.y).abs()
-                + (tmp.z - start_point.z).abs())
-        {
+    fn normal(&self, ray: &Ray) -> Ray {
+        let mut ray = Ray::new_norm(ray.orig, ray.orig - &self.center);
+        if ray.dir.dot(&ray.orig) > 0.0 {
             ray.orig.invert();
         }
         return ray;

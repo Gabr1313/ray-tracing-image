@@ -1,0 +1,26 @@
+_if_word_starts_with_underscore_is_ignored
+                    _________________
+_dimension            720   480
+_dimension          _3840 _2160
+_threads _0=auto        0
+_sqrt_ray_per_pixel     4
+_number_of_update       4
+_camera_position      250   250   190
+_camera_vector       -100  -100   -70
+_camera_angle           1
+_max_bounce             7
+_background_color      .0    .0    .0
+_total_objects          5
+
+_triangle _point            _point           _point             _color            _refl _emit
+_________ _________________ _________________ _________________ _________________ _____ _____
+triangle    200     0     0  -200     0     0  -100   150    50   .63   .01     1    .5     0
+triangle    200     0     0  -200     0     0  -100  -150    50    .5     1    .5    .5     0
+sphere     -100     0    53    50                                   1     1     0     0     0
+sphere       60     0    32    30                                   0     1     1     0     0
+sphere      -20     0    42    10                                   1     1     1     0     5
+sphere     1000   300   100   750                                   1     1     1     0     1
+
+_triangle _point            _point           _point            _color             _refl _emit
+_sphere   _point            _radius                            _color             _refl _emit
+_plane    _aX+bY+cZ-D=0                                        _color             _refl _emit

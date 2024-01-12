@@ -122,8 +122,8 @@ impl Intersectable for Triangle {
         }
         return None;
     }
-    fn normal(&self, point: &Float3, start_point: &Float3) -> Ray {
-        return self.plane.normal(point, start_point);
+    fn normal(&self, ray: &Ray) -> Ray {
+        return self.plane.normal(ray);
     }
 }
 
