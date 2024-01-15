@@ -78,6 +78,7 @@ pub fn shoot_and_draw(settings: Settings) -> Result<()> {
         pool.wait();
         file.seek(SeekFrom::Start(header_len))?;
         file.write_all(&image_status.lock().unwrap().u8s)?;
+        file.flush()?;
         eprintln!("\x1b[A{} / {}", nou, number_of_updates);
     }
 
