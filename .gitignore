@@ -4,4 +4,5 @@
 *.o
 *.json
 *.cache*
+*.bin
 ray-tracer

@@ -18,7 +18,7 @@ InputData scan_input() {
 	InputData input_data;
 	const int width = next_int(buffer);
 	const int height = next_int(buffer);
-	next_int(buffer);  // n_threads
+	input_data.save_floats = next_int(buffer);
 	const int sqrt_ray_per_pixel = next_int(buffer);
 	input_data.number_of_updates = next_int(buffer);
 	const Float3 camera_position = next_float3(buffer);

@@ -15,13 +15,14 @@ void shoot_a_pixel(Float3* pixel_to_update, const int sqrt_ray_per_pixel,
 				   const ObjectVec* objects, const float max_bounces,
 				   const Float3* background);
 
-int min(int a, int b) { return a < b ? a : b; }
+int int_min(int a, int b) { return a < b ? a : b; }
 
 void shoot_and_draw(const InputData* input_data) {
 	char header[64];
 
 	const int width = input_data->camera.width;
 	const int height = input_data->camera.height;
+	const int total_pixel = width * height;
 	const int sqrt_ray_per_pixel = input_data->camera.sqrt_ray_per_pixel;
 	const int ray_per_pixel = sqrt_ray_per_pixel * sqrt_ray_per_pixel;
 	const int number_of_updates = input_data->number_of_updates;
@@ -33,19 +34,19 @@ void shoot_and_draw(const InputData* input_data) {
 	const Float3* d_y = &input_data->camera.d_y;
 	const Float3* background = &input_data->background_color;
 	const ObjectVec* objects = &input_data->objects;
+	const int save_floats = input_data->save_floats;
 
-	const int content_len = width * height * 3;
-	Float3* pixel_sum = calloc(width * height, sizeof(Float3));
+	const int content_len = total_pixel * 3;
+	Float3* pixel_sum = calloc(total_pixel, sizeof(Float3));
 	unsigned char* buffer = malloc(content_len * sizeof(unsigned char));
 	if (pixel_sum == NULL) {
 		fprintf(stderr, "Error: can't allocate memory for %d pixel\n",
-				width * height);
+				total_pixel);
 		exit(-1);
 	}
 
 	sprintf(header, "P6\n%d %d\n255\n", width, height);
 	const int heder_len = strlen(header);
-
 	fwrite(header, sizeof(char), heder_len, stdout);
 
 	srand(time(NULL));
@@ -58,19 +59,38 @@ void shoot_and_draw(const InputData* input_data) {
 			for (int j = 0; j < width; j++, idx++) {
 				shoot_a_pixel(&pixel_sum[idx], sqrt_ray_per_pixel, &col, d_x,
 							  d_y, objects, max_bounces, background);
-				buffer[idx_buffer++] = min(pixel_sum[idx].x * to_multiply, 255);
-				buffer[idx_buffer++] = min(pixel_sum[idx].y * to_multiply, 255);
-				buffer[idx_buffer++] = min(pixel_sum[idx].z * to_multiply, 255);
+				buffer[idx_buffer++] =
+					int_min(pixel_sum[idx].x * to_multiply, 255);
+				buffer[idx_buffer++] =
+					int_min(pixel_sum[idx].y * to_multiply, 255);
+				buffer[idx_buffer++] =
+					int_min(pixel_sum[idx].z * to_multiply, 255);
 				float3_add_eq(&col.direction, delta_x);
 			}
 			float3_add_eq(&row.direction, delta_y);
 		}
+
 		fseek(stdout, heder_len, SEEK_SET);
 		fwrite(buffer, sizeof(unsigned char), content_len, stdout);
 		fflush(stdout);
 		fprintf(stderr, "\r%d / %d", nou, number_of_updates);
 	}
 	fprintf(stderr, "\n");
+
+	if (save_floats) {
+		const float to_multiply = 1.0f / (number_of_updates * ray_per_pixel);
+		for (int i = 0; i < total_pixel; i++)
+			float3_mul_eq(&pixel_sum[i], to_multiply);
+		FILE* file = fopen("floats.pfm", "wb");
+		if (file == NULL) {
+			fprintf(stderr, "Error: can't open file floats.bin\n");
+			exit(-1);
+		}
+		fprintf(file, "PF\n%d %d\n-1.0\n", width, height);
+		fwrite(pixel_sum, sizeof(Float3), total_pixel, file);
+		fclose(file);
+	}
+
 	free(buffer);
 	free(pixel_sum);
 	free(input_data->objects.ptr);

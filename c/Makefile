@@ -1,8 +1,9 @@
 CXX = gcc
-CXXFLAGS_COMMON = -std=c17 -Wall -Wextra -lm
+CXXFLAGS_COMMON = -std=c17 -Wall -Wextra
 CXXFLAGS_RELEASE = $(CXXFLAGS_COMMON) -Ofast
-CXXFLAGS_DEBUG = $(CXXFLAGS_COMMON) -O0 -fsanitize=address -DDEBUG -g \
+CXXFLAGS_DEBUG = $(CXXFLAGS_COMMON) -O0 -DDEBUG -g \
 				 -Wno-sign-conversion -D_GLIBCXX_ASSERTIONS
+CXXFLAGS_LINK = -lm 
 
 MODE ?= debug
 ifeq ($(MODE), debug)
@@ -26,11 +27,21 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c $(HEADERS)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 $(EXECUTABLE): $(OBJECTS)
-	$(CXX) $(CXXFLAGS) $(OBJECTS) -o $@
+	$(CXX) $(CXXFLAGS_LINK) $(OBJECTS) -o $@
 
 .PHONY: clean
 clean:
 	rm -f $(OBJ_DIR)/*.o
 
 run: $(EXECUTABLE)
-	./$(EXECUTABLE) <input.txt >draw.ppm
+	$(EXECUTABLE) <input.txt >draw.ppm
+
+EXECUTABLE_DENOISE = ./oidn-denoiser
+DENOISER_DIR = denoiser
+CXXFLAGS_LINK_DENOISER = -lOpenImageDenoise
+
+$(EXECUTABLE_DENOISE):
+	$(CXX) $(CXXFLAGS) $(CXXFLAGS_LINK_DENOISER) $(DENOISER_DIR)/denoise-floats.c -o $@
+
+denfl: $(EXECUTABLE_DENOISE)
+	$(EXECUTABLE_DENOISE) <floats.pfm >draw-denoised.ppm
