@@ -44,4 +44,4 @@ $(EXECUTABLE_DENOISE):
 	$(CXX) $(CXXFLAGS) $(CXXFLAGS_LINK_DENOISER) $(DENOISER_DIR)/denoise-floats.c -o $@
 
 denfl: $(EXECUTABLE_DENOISE)
-	$(EXECUTABLE_DENOISE) <floats.pfm >draw-denoised.ppm
+	$(EXECUTABLE_DENOISE) <color.pfm >draw-denoised.ppm
