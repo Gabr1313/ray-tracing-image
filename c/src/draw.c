@@ -93,7 +93,6 @@ void shoot_and_draw(const InputData* input_data) {
 
 	free(buffer);
 	free(pixel_sum);
-	free(input_data->objects.ptr);
 }
 
 inline void shoot_a_pixel(Float3* pixel_to_update, const int sqrt_ray_per_pixel,
