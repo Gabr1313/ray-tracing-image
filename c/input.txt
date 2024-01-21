@@ -3,8 +3,8 @@ _if_word_starts_with_underscore_is_ignored
 _dimension            720   480
 _dimension          _3840 _2160
 _save_floats            1
-_sqrt_ray_per_pixel     2
-_number_of_update       1
+_sqrt_ray_per_pixel     4
+_number_of_update       4
 _camera_position      250   250   190
 _camera_vector       -100  -100   -70
 _camera_angle           1

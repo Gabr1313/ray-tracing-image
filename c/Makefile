@@ -3,6 +3,7 @@ CXXFLAGS_COMMON = -std=c17 -Wall -Wextra
 CXXFLAGS_RELEASE = $(CXXFLAGS_COMMON) -Ofast
 CXXFLAGS_DEBUG = $(CXXFLAGS_COMMON) -O0 -DDEBUG -g \
 				 -Wno-sign-conversion -D_GLIBCXX_ASSERTIONS
+				# -fsanitize=address
 CXXFLAGS_LINK = -lm 
 
 MODE ?= debug
@@ -16,7 +17,7 @@ endif
 
 SRC_DIR = src
 OBJ_DIR = obj
-BIN_DIR = .
+BIN_DIR = bin
 
 SOURCES = $(wildcard $(SRC_DIR)/*.c)
 HEADERS = $(wildcard $(SRC_DIR)/*.h)
@@ -36,12 +37,12 @@ clean:
 run: $(EXECUTABLE)
 	$(EXECUTABLE) <input.txt >draw.ppm
 
-EXECUTABLE_DENOISE = ./oidn-denoiser
+EXECUTABLE_DENOISE = $(BIN_DIR)/denoise-pfm
 DENOISER_DIR = denoiser
 CXXFLAGS_LINK_DENOISER = -lOpenImageDenoise
 
 $(EXECUTABLE_DENOISE):
-	$(CXX) $(CXXFLAGS) $(CXXFLAGS_LINK_DENOISER) $(DENOISER_DIR)/denoise-floats.c -o $@
+	$(CXX) $(CXXFLAGS) $(CXXFLAGS_LINK_DENOISER) $(DENOISER_DIR)/denoise-pfm.c -o $@
 
 denfl: $(EXECUTABLE_DENOISE)
-	$(EXECUTABLE_DENOISE) <color.pfm >draw-denoised.ppm
+	$(EXECUTABLE_DENOISE) >draw-denoised.ppm
