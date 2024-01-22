@@ -39,3 +39,4 @@ typedef struct _ObjectContainer {
 
 ObjectVec objectvec_new(const int n);
 void object_vec_push(ObjectVec* object_v, const Object* object);
+void object_vec_free(ObjectVec* object_v);

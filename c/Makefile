@@ -35,7 +35,7 @@ clean:
 	rm -f $(OBJ_DIR)/*.o
 
 run: $(EXECUTABLE)
-	$(EXECUTABLE) <input.txt >draw.ppm
+	$(EXECUTABLE) <input.txt
 
 EXECUTABLE_DENOISE = $(BIN_DIR)/denoise-pfm
 DENOISER_DIR = denoiser

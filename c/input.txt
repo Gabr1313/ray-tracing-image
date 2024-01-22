@@ -1,8 +1,9 @@
 _if_word_starts_with_underscore_is_ignored
                     _________________
+_file_name       draw.ppm
 _dimension            720   480
 _dimension          _3840 _2160
-_save_floats            1
+_save_floats            1      color.pfm     albedo.pfm     normal.pfm
 _sqrt_ray_per_pixel     4
 _number_of_update       4
 _camera_position      250   250   190

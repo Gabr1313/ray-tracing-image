@@ -89,3 +89,7 @@ Float3 half_sphere_random(const Float3* normal) {
 	}
 	return retval;
 }
+
+void object_vec_free(ObjectVec* object_v) {
+	free(object_v->ptr);
+}

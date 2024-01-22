@@ -12,13 +12,24 @@ void next_valid_word(char* buffer);
 int next_int(char* buffer);
 float next_float(char* buffer);
 Float3 next_float3(char* buffer);
+char* next_string(char* buffer);
 
 InputData scan_input() {
 	char buffer[256];
 	InputData input_data;
+	input_data.color_ppm = next_string(buffer);
 	const int width = next_int(buffer);
 	const int height = next_int(buffer);
-	input_data.save_floats = next_int(buffer);
+	const int save_floats = next_int(buffer);
+	if (save_floats) {
+		input_data.color_pfm = next_string(buffer);
+		input_data.albedo_pfm = next_string(buffer);
+		input_data.normal_pfm = next_string(buffer);
+	} else {
+		input_data.color_pfm = NULL;
+		input_data.albedo_pfm = NULL;
+		input_data.normal_pfm = NULL;
+	}
 	const int sqrt_ray_per_pixel = next_int(buffer);
 	input_data.number_of_updates = next_int(buffer);
 	const Float3 camera_position = next_float3(buffer);
@@ -97,4 +108,19 @@ Float3 next_float3(char* buffer) {
 	const float y = next_float(buffer);
 	const float z = next_float(buffer);
 	return float3_new(x, y, z);
+}
+
+char* next_string(char* buffer) {
+	next_valid_word(buffer);
+	char* ris = malloc(sizeof(char) * (strlen(buffer) + 1));
+	strcpy(ris, buffer);
+	return ris;
+}
+
+void free_input_data(InputData *input) {
+	free(input->color_ppm);
+	free(input->color_pfm);
+	free(input->albedo_pfm);
+	free(input->normal_pfm);
+	object_vec_free(&input->objects);
 }
