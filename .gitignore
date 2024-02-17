@@ -1,8 +1,10 @@
 /target
+*/bin
+*/obj
 *.ppm
 *.png
 *.o
 *.json
 *.cache*
 *.bin
-ray-tracer
+*.pfm
