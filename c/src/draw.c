@@ -82,7 +82,7 @@ void shoot_and_draw(const InputData* input_data) {
 		calculate_and_write_pfm(albedo_pfm, input_data, pixel_sum,
 								trace_albedo);
 		calculate_and_write_pfm(normal_pfm, input_data, pixel_sum,
-								trace_albedo);
+								trace_normal);
 	}
 
 	free(buffer);
