@@ -10,6 +10,7 @@ int main(int argc, char* argv[]) {
 	if (argc < 3 || argc > 4) {
 		fprintf(stderr, "Usage: %s <input_file> <output_file> [0|1]\n",
 				argv[0]);
+		return 0;
 	}
 	if (argc == 4) to_0_1 = argv[3][0] == '1';
 	input_file = argv[1];

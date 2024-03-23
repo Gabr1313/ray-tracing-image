@@ -6,12 +6,13 @@ CXXFLAGS_DEBUG = $(CXXFLAGS_COMMON) -O0 -DDEBUG -g \
 				# -fsanitize=address
 CXXFLAGS_LINK = -lm 
 
-MODE ?= debug
+# make MODE=release
+MODE ?= debug 
 ifeq ($(MODE), debug)
-$(warning MODE is debug)
+# $(warning MODE is debug)
 	CXXFLAGS = $(CXXFLAGS_DEBUG)
 else 
-$(warning MODE is release)
+# $(warning MODE is release)
 	CXXFLAGS = $(CXXFLAGS_RELEASE)
 endif
 
@@ -30,10 +31,12 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c $(HEADERS)
 $(EXECUTABLE): $(OBJECTS)
 	$(CXX) $(CXXFLAGS_LINK) $(OBJECTS) -o $@
 
+# make clean 
 .PHONY: clean
 clean:
 	rm -f $(OBJ_DIR)/*.o
 
+# make MODE=release run 
 run: $(EXECUTABLE)
 	$(EXECUTABLE) <input.txt
 
@@ -44,5 +47,6 @@ CXXFLAGS_LINK_DENOISER = -lOpenImageDenoise
 $(EXECUTABLE_DENOISE):
 	$(CXX) $(CXXFLAGS) $(CXXFLAGS_LINK_DENOISER) $(DENOISER_DIR)/denoise-pfm.c -o $@
 
-denfl: $(EXECUTABLE_DENOISE)
+# make MODE=release den
+den: $(EXECUTABLE_DENOISE)
 	$(EXECUTABLE_DENOISE) >draw-denoised.ppm
